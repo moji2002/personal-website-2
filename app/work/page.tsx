@@ -1,8 +1,7 @@
 "use client";
-
 import Editor from "@/components/editor";
+import Highlighter from "@/components/syntax-highlighter";
 import useTyping from "@/hooks/useTyping";
-
 
 const codeStr = `// Work information
 let profession = 'Front-end Developer';
@@ -19,10 +18,15 @@ let languages = [
 let frameworks = [
   'React',
   'Next',
-  'Tailwind', // I might be biased, but it's really great!
+  'Tailwind', 
 ];
 `;
 export default function WorkPage() {
   const { code } = useTyping(codeStr);
-  return <Editor code={code} />;
+
+  return (
+    <Editor>
+      <Highlighter code={code} />
+    </Editor>
+  );
 }

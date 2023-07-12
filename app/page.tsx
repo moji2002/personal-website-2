@@ -1,6 +1,7 @@
 "use client";
 
 import Editor from "@/components/editor";
+import Highlighter from "@/components/syntax-highlighter";
 import useTyping from "@/hooks/useTyping";
 
 const codeStr = `// Personal information
@@ -18,5 +19,9 @@ let hobbies = [
 export default function HomePage() {
   const { code } = useTyping(codeStr);
 
-  return <Editor code={code} />;
+  return (
+    <Editor>
+      <Highlighter code={code} />
+    </Editor>
+  );
 }

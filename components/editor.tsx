@@ -1,49 +1,73 @@
 "use client";
+import CountTracker from "@/utils/count-tracker";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import {
-  // docco,
-  atomOneDark,
-  // atomOneDarkReasonable,
-} from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { ReactNode, useEffect } from "react";
 
 type Props = {
-  code: string;
+  children: ReactNode;
 };
-export default function Editor({ code }: Props) {
-  // const router = useRouter();
+
+export default function Editor({ children }: Props) {
   const pathName = usePathname();
 
-  const handleClose = () => {
-    alert("close");
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
+
+  const handleClick = (key: string, alerts: string[]) => {
+    return () => {
+      const tracker = new CountTracker(key);
+
+      switch (tracker.count) {
+        case 5:
+          alert(frustratedAlerts[0]);
+          break;
+
+        case 10:
+          alert(frustratedAlerts[1]);
+          break;
+
+        case 11:
+          alert(frustratedAlerts[2]);
+          break;
+
+        case 50:
+          alert(frustratedAlerts[3]);
+          break;
+
+        default:
+          alert(alerts[tracker.count % alerts.length]);
+          break;
+      }
+
+      tracker.increment();
+    };
   };
-  const handleMaximum = () => {
-    alert("max");
-  };
-  const handleMinimize = () => {
-    alert("min");
-  };
+
   return (
-    <div className=" flex items-center justify-center h-screen w-full">
-      <div className="w-full h-[500px] flex flex-col rounded-[10px] overflow-hidden shadow-xl ">
+    <div className=" flex items-center justify-center h-screen w-full ">
+      <div className="w-full h-[600px] max-w-[1024px] flex flex-col rounded-[10px] overflow-hidden shadow-2xl ">
         <div className=" h-[34px] flex justify-between bg-[#22252a] shrink-0 p-[10px]">
           <div className="gap-[8px] flex">
             <button
-              onClick={handleClose}
-              className="w-[12px] h-[12px] bg-[#ed6a5e] rounded-full"
+              onClick={handleClick("close", closeAlerts)}
+              className="w-[12px] h-[12px] cursor-default bg-[#ed6a5e] rounded-full  hover:saturate-150 "
             >
               <span className="sr-only">close</span>
             </button>
             <button
-              onClick={handleMinimize}
-              className="w-[12px] h-[12px] bg-[#f4be50] rounded-full"
-            >              <span className="sr-only">minimize</span>
+              onClick={handleClick("minimize", minimizeAlerts)}
+              className="w-[12px] h-[12px] cursor-default bg-[#f4be50] rounded-full  hover:saturate-150 "
+            >
+              {" "}
+              <span className="sr-only">minimize</span>
             </button>
             <button
-              onClick={handleMaximum}
-              className="w-[12px] h-[12px] bg-[#61c554] rounded-full"
-            >              <span className="sr-only">maximize</span>
+              onClick={handleClick("maximize", maximizeAlerts)}
+              className="w-[12px] h-[12px] cursor-default bg-[#61c554] rounded-full  hover:saturate-150 "
+            >
+              <span className="sr-only">maximize</span>
             </button>
           </div>
           <div className="flex">
@@ -74,15 +98,7 @@ export default function Editor({ code }: Props) {
           />
         </div>
         <div className="bg-[#292c33] grow overflow-auto text-[10px] sm:text-xs md:text-sm">
-          <SyntaxHighlighter
-            showLineNumbers
-            wrapLines
-            language="typescript"
-            style={atomOneDark}
-            wrapLongLines
-          >
-            {code}
-          </SyntaxHighlighter>
+          {children}
         </div>
         <div className="h-[22px] bg-[#22252a] shrink-0"></div>
       </div>
@@ -95,6 +111,7 @@ type LinkProps = {
   href: string;
   active: boolean;
 };
+
 const EditorLink = ({ active, href, label }: LinkProps) => {
   return (
     <Link
@@ -107,3 +124,34 @@ const EditorLink = ({ active, href, label }: LinkProps) => {
     </Link>
   );
 };
+
+const commonAlerts = [
+  "Let's not do that, okay?",
+  "Oh. Nope. Not going to happen!",
+];
+
+const closeAlerts = [
+  "Did you really want to close the editor? 🤔",
+  "Bye bye I guess?",
+  "oops! scripts may close only the windows that were opened by them.",
+  ...commonAlerts,
+];
+
+const maximizeAlerts = [
+  "This is not a real editor, do you want to fullscreen your _actual_ editor?",
+  ...commonAlerts,
+];
+
+const minimizeAlerts = [
+  "I do not want to be smol",
+  "Please don't try to minimize this editor. The page will feel empty.",
+  "I might get tiny",
+  ...commonAlerts,
+];
+
+const frustratedAlerts = [
+  "You clicked it 5 times, what do you expect from me?",
+  "You clicked it 10 times now, what do you WANT FROM ME?",
+  "LEAVE ME ALONE 😭",
+  "You do realize that you clicked this button 50 times now right?",
+];
