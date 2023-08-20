@@ -10,9 +10,9 @@ class CountTracker {
     return 0;
   }
 
-   increment() {
+  increment() {
     localStorage.setItem(this.key, this.count + 1 + "");
   }
 }
 
-export default CountTracker
+export default CountTracker;

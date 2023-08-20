@@ -8,6 +8,11 @@ type Props = {
   children: ReactNode;
 };
 
+enum Action {
+  "Close",
+  "Maximize",
+  "Minimize",
+}
 export default function Editor({ children }: Props) {
   const pathName = usePathname();
 
@@ -15,9 +20,9 @@ export default function Editor({ children }: Props) {
     localStorage.clear();
   }, []);
 
-  const handleClick = (key: string, alerts: string[]) => {
+  const handleClick = (key: Action, alerts: string[]) => {
     return () => {
-      const tracker = new CountTracker(key);
+      const tracker = new CountTracker(key + "");
 
       switch (tracker.count) {
         case 5:
@@ -47,24 +52,24 @@ export default function Editor({ children }: Props) {
 
   return (
     <div className=" flex items-center justify-center h-screen w-full ">
-      <div className="w-full h-[600px] max-w-[1024px] flex flex-col rounded-[10px] overflow-hidden shadow-2xl ">
+      <div className="w-full h-[600px] scale-100 max-w-[1024px] flex flex-col rounded-[10px] overflow-hidden shadow-2xl ">
         <div className=" h-[34px] flex justify-between bg-[#22252a] shrink-0 p-[10px]">
           <div className="gap-[8px] flex">
             <button
-              onClick={handleClick("close", closeAlerts)}
+              onClick={handleClick(Action.Close, closeAlerts)}
               className="w-[12px] h-[12px] cursor-default bg-[#ed6a5e] rounded-full  hover:saturate-150 "
             >
               <span className="sr-only">close</span>
             </button>
             <button
-              onClick={handleClick("minimize", minimizeAlerts)}
+              onClick={handleClick(Action.Minimize, minimizeAlerts)}
               className="w-[12px] h-[12px] cursor-default bg-[#f4be50] rounded-full  hover:saturate-150 "
             >
               {" "}
               <span className="sr-only">minimize</span>
             </button>
             <button
-              onClick={handleClick("maximize", maximizeAlerts)}
+              onClick={handleClick(Action.Maximize, maximizeAlerts)}
               className="w-[12px] h-[12px] cursor-default bg-[#61c554] rounded-full  hover:saturate-150 "
             >
               <span className="sr-only">maximize</span>
