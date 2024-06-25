@@ -13,7 +13,7 @@ let hobbies = [
   "Eating food",
   "More programming",
   "Gym",
-  "removing useless comments in code", //Like the one above the variable name...
+  "Removing useless comments in code" , //Like the one above the variable name... 
 ];
 `;
 export default function HomePage() {

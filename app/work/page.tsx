@@ -13,12 +13,12 @@ let languages = [
   'JavaScript',
   'HTML',
   'CSS',
+  'Tailwind', 
 ];
 
 let frameworks = [
   'React',
   'Next',
-  'Tailwind', 
 ];
 `;
 export default function WorkPage() {
