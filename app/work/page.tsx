@@ -4,21 +4,22 @@ import Highlighter from "@/components/syntax-highlighter";
 import useTyping from "@/hooks/useTyping";
 
 const codeStr = `// Work information
-let profession = 'Front-end Developer';
-let employer = 'Arad';
+const profession = 'Front-end Developer';
+const employer = 'Ayande Nevisan';
+const yearsOfExperience = 4;
 
 // Most important skills
-let languages = [
+const languages = [
   'TypeScript',
   'JavaScript',
-  'HTML',
-  'CSS',
-  'Tailwind', 
 ];
 
-let frameworks = [
+const skills = [
   'React',
   'Next',
+  'React Native',
+  'Tailwind', 
+  'Shadcn-UI',
 ];
 `;
 export default function WorkPage() {

@@ -5,10 +5,10 @@ import Highlighter from "@/components/syntax-highlighter";
 import useTyping from "@/hooks/useTyping";
 
 const codeStr = `// Personal information
-let name = "Mojtaba Beheshti";
+const name = "Mojtaba Beheshti";
 
 // Hobbies
-let hobbies = [
+const hobbies = [
   "Programming",
   "Eating food",
   "More programming",

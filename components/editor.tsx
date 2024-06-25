@@ -51,10 +51,10 @@ export default function Editor({ children }: Props) {
   };
 
   return (
-    <div className=" flex items-center justify-center h-screen w-full ">
-      <div className="w-full h-[600px] scale-100 max-w-[1024px] flex flex-col rounded-[10px] overflow-hidden shadow-2xl ">
-        <div className=" h-[34px] flex justify-between bg-[#22252a] shrink-0 p-[10px]">
-          <div className="gap-[8px] flex">
+    <div className=" flex md:items-center  justify-center h-screen w-full ">
+      <div className="w-full h-[400px] md:h-[600px] scale-100 max-w-[1024px] flex flex-col rounded-[10px] overflow-hidden shadow-2xl ">
+        <div className=" h-[34px] flex justify-end md:justify-between bg-[#22252a] shrink-0 p-[10px]">
+          <div className="gap-[8px] hidden md:flex">
             <button
               onClick={handleClick(Action.Close, closeAlerts)}
               className="w-[12px] h-[12px] cursor-default bg-[#ed6a5e] rounded-full  hover:saturate-150 "

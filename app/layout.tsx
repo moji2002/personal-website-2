@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`bg-slate-800 px-2 `}>
+      <body className={`bg-slate-800 md:px-2 `}>
         <div className="container mx-auto  ">
           <div className=" flex items-center justify-center  ">{children}</div>
         </div>
