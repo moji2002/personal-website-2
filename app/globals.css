@@ -53,6 +53,11 @@
     --dur-fast: 160ms;
     --dur-base: 300ms;
     --dur-slow: 600ms;
+    /* Dark theme defaults */
+    --surface: 240 6% 7%; /* near-zinc-900 */
+    --surface-overlay: 240 6% 12%;
+    --surface-outline: 240 5% 26%;
+    --accent: 170 100% 50%; /* teal/cyan accent */
 }
 
 .light {

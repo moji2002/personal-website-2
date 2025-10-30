@@ -3,6 +3,7 @@ import * as React from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
+import ThemeToggle from '../components/theme-toggle';
 import { DefaultSeo } from 'next-seo';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -50,6 +51,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
             <head>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            try {
+                                const stored = localStorage.getItem('theme');
+                                const systemPrefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                                const useLight = stored ? stored === 'light' : systemPrefersLight;
+                                if (useLight) document.documentElement.classList.add('light');
+                            } catch {}
+                        `
+                    }}
+                />
                 <DefaultSeo
                     titleTemplate="%s | Mojtaba Beheshti"
                     defaultTitle="Mojtaba Beheshti — Developer Portfolio"
@@ -133,6 +146,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <li><Link href="#about" className="hover:text-[hsl(var(--color-accent))]">About</Link></li>
                             <li><Link href="#writing" className="hover:text-[hsl(var(--color-accent))]">Writing</Link></li>
                             <li><Link href="#contact" className="hover:text-[hsl(var(--color-accent))]">Contact</Link></li>
+                            <li><ThemeToggle /></li>
                         </ul>
                     </div>
                 </nav>

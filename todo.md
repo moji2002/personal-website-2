@@ -51,7 +51,7 @@
 - [ ] Implement code highlighting (Shiki/Prism)
 - [x] Add next-seo for SEO/meta tags
 - [ ] Optimize images, fonts, and enable code splitting
-- [ ] Implement theming: CSS variables + Tailwind, system/theme toggle
+- [x] Implement theming: CSS variables + Tailwind, system/theme toggle
 - [ ] Store content in markdown/MDX, with optional CMS adapter
 
 ## 8. Final Deliverables
