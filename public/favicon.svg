@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00FFE0"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#0A0A0A"/>
+  <path d="M8 22c0-6 4.5-12 8-12s8 6 8 12" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="16" cy="16" r="2.5" fill="url(#g)"/>
+  <path d="M8 24h16" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+  <title>mojtaba.dev</title>
+  <desc>Monogram mark for Mojtaba Beheshti</desc>
+  
+</svg>
+
+

@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     title: 'Mojtaba Beheshti — Developer Portfolio',
     description: 'I build fast, resilient, beautifully engineered web experiences.',
     metadataBase: new URL('https://mojtaba.dev'),
+    icons: {
+        icon: '/favicon.svg',
+        shortcut: '/favicon.svg',
+    },
     openGraph: {
         type: 'website',
         url: 'https://mojtaba.dev',
