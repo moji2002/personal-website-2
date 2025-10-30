@@ -136,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     }, null, 2)
                 }} />
             </head>
-            <body>
+            <body className={inter.className}>
                 {/* Sticky Nav */}
                 <nav className="sticky top-0 z-50 w-full backdrop-blur bg-zinc-900/70 border-b border-zinc-800/60 shadow-md">
                     <div className="container-grid flex items-center justify-between h-16 px-4 md:px-0">

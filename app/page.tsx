@@ -1,6 +1,11 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+const HeroVisualPlaceholder = dynamic(() => import('../components/HeroVisualPlaceholder'), { ssr: false });
+const IconDemo = dynamic(() => import('../components/IconDemo'), { ssr: false });
+const SectionHeader = dynamic(() => import('../components/SectionHeader'));
 
 export default function HomePage() {
     return (
@@ -273,8 +278,10 @@ export default function HomePage() {
                                     <div className="font-semibold text-zinc-100 text-base">{t.name}</div>
                                     <div className="text-xs text-zinc-400 font-mono">{t.title}</div>
                                 </div>
-                                {/* Logo placeholder */}
-                                <div className="ml-5 w-10 h-10 rounded bg-zinc-800 flex items-center justify-center"><span className="text-xs text-zinc-300">Logo</span></div>
+                                {/* Logo */}
+                                <div className="ml-5 w-10 h-10 rounded overflow-hidden">
+                                    <Image src={i === 0 ? '/logo-placeholder-1.svg' : '/logo-placeholder-2.svg'} alt={`${t.name} company logo`} width={40} height={40} className="w-10 h-10" />
+                                </div>
                             </figcaption>
                         </figure>
                     ))}
@@ -404,17 +411,7 @@ export default function HomePage() {
     );
 }
 
-// SectionHeader component
-function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
-    return (
-        <header className="mb-10 flex flex-col items-start" aria-label={title + (subtitle ? `: ${subtitle}` : '')}>
-            {subtitle && (
-                <span className="uppercase tracking-widest text-xs mb-1 font-bold text-[hsl(var(--color-accent))]">{subtitle}</span>
-            )}
-            <h2 className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-[hsl(var(--color-accent))] to-white/90 drop-shadow">{title}</h2>
-        </header>
-    );
-}
+// SectionHeader moved to components/SectionHeader
 
 // CodeBlock component
 function CodeBlock({ code, expanded = false, language = 'typescript' }: { code: string; expanded?: boolean; language?: string }) {
@@ -544,38 +541,8 @@ function FormButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     );
 }
 
-// HeroVisualPlaceholder component
-function HeroVisualPlaceholder() {
-    return (
-        <div
-            className="absolute inset-0 rounded-2xl z-0 overflow-hidden pointer-events-none"
-            aria-label="Hero visual placeholder for future Three.js/WebGL"
-        >
-            <div className="w-full h-full bg-gradient-to-br from-[hsl(var(--color-accent))]/[.12] to-zinc-900 blur-2xl animate-pulse" />
-            {/* WebGL/Three.js scene will eventually mount here. */}
-        </div>
-    );
-}
+// HeroVisualPlaceholder moved to components/HeroVisualPlaceholder
 
-// Icon demo row
-function IconDemo() {
-    return (
-        <section className="container-grid py-16" aria-labelledby="icon-demo-heading">
-            <SectionHeader title="Iconography Demo" subtitle="Thin-stroke, Grid, Monochrome" />
-            <div className="flex gap-8 items-center bg-zinc-900/40 p-8 rounded-xl border border-zinc-800 justify-center">
-                {/* Home */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="" aria-label="Home icon"><path d="M3 11.4 12 4l9 7.4" /><path d="M9 21V14h6v7" /><path d="M19 21V12.7M5 21V12.7" /></svg>
-                {/* Code */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="" aria-label="Code icon"><path d="M16 18 22 12 16 6" /><path d="M8 6 2 12l6 6" /></svg>
-                {/* Link */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="" aria-label="Link icon"><path d="M10 14 21 3M17 3h4v4" /><rect x="3" y="9" width="10" height="13" rx="2" /></svg>
-                {/* Mail */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="" aria-label="Mail icon"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 8.1 7.1a2 2 0 0 0 2.6 0L21 7" /></svg>
-                {/* Check */}
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" className="" aria-label="Check icon"><path d="m5 13 4 4L19 7" /></svg>
-            </div>
-        </section>
-    );
-}
+// IconDemo moved to components/IconDemo
 
 

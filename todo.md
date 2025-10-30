@@ -50,7 +50,7 @@
 - [ ] Setup MDX for the blog
 - [ ] Implement code highlighting (Shiki/Prism)
 - [x] Add next-seo for SEO/meta tags
-- [ ] Optimize images, fonts, and enable code splitting
+- [x] Optimize images, fonts, and enable code splitting
 - [x] Implement theming: CSS variables + Tailwind, system/theme toggle
 - [ ] Store content in markdown/MDX, with optional CMS adapter
 
