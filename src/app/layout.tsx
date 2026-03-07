@@ -1,10 +1,13 @@
 import Navbar from "@/components/navbar";
+import { ReduceMotionProvider } from "@/components/reduce-motion-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
+import { isCrawler } from "@/lib/bot-detection";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 
@@ -48,6 +51,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: `${DATA.name}`,
+    description: DATA.description,
     card: "summary_large_image",
   },
   verification: {
@@ -56,13 +60,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent");
+  const reduceMotion = isCrawler(userAgent);
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-reduce-motion={reduceMotion ? "true" : undefined}
+    >
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased relative",
@@ -70,11 +82,12 @@ export default function RootLayout({
           geistMono.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="light">
-          <TooltipProvider delayDuration={0}>
-            <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
-              <FlickeringGrid
-                className="h-full w-full"
+        <ReduceMotionProvider reduceMotion={reduceMotion}>
+          <ThemeProvider attribute="class" defaultTheme="light">
+            <TooltipProvider delayDuration={0}>
+              <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
+                <FlickeringGrid
+                  className="h-full w-full"
                 squareSize={2}
                 gridGap={2}
                 style={{
@@ -89,6 +102,7 @@ export default function RootLayout({
             <Navbar />
           </TooltipProvider>
         </ThemeProvider>
+        </ReduceMotionProvider>
       </body>
     </html>
   );

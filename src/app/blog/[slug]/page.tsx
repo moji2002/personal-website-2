@@ -47,6 +47,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `${DATA.url}/blog/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -101,7 +104,7 @@ export default async function Blog({
     "@type": "BlogPosting",
     headline: post.title,
     datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
+    dateModified: post.updatedAt ?? post.publishedAt,
     description: post.summary,
     image: post.image
       ? `${DATA.url}${post.image}`

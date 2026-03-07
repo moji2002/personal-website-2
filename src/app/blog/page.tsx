@@ -3,22 +3,57 @@ import { allPosts } from "content-collections";
 import type { Metadata } from "next";
 import { paginate, normalizePage } from "@/lib/pagination";
 import BlogsSection from "@/components/section/blogs-section";
-
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Thoughts on software development, life, and more.",
-  openGraph: {
-    title: "Blog",
-    description: "Thoughts on software development, life, and more.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog",
-    description: "Thoughts on software development, life, and more.",
-  },
-};
+import { DATA } from "@/data/resume";
 
 const PAGE_SIZE = 6;
+const BLOG_DESCRIPTION = "Thoughts on software development, life, and more.";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const { page: pageParam } = await searchParams;
+  const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+  const currentPage = normalizePage(pageParam, totalPages);
+
+  const baseUrl = `${DATA.url}/blog`;
+  const title =
+    currentPage === 1 ? "Blog" : `Blog - Page ${currentPage}`;
+  const canonical =
+    currentPage === 1 ? baseUrl : `${baseUrl}?page=${currentPage}`;
+
+  const prev =
+    currentPage > 1
+      ? currentPage === 2
+        ? baseUrl
+        : `${baseUrl}?page=${currentPage - 1}`
+      : undefined;
+  const next =
+    currentPage < totalPages
+      ? `${baseUrl}?page=${currentPage + 1}`
+      : undefined;
+
+  return {
+    title,
+    description: BLOG_DESCRIPTION,
+    alternates: {
+      canonical,
+      ...(prev && { prev }),
+      ...(next && { next }),
+    },
+    openGraph: {
+      title,
+      description: BLOG_DESCRIPTION,
+      url: canonical,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: BLOG_DESCRIPTION,
+    },
+  };
+}
 
 export default async function BlogPage({
   searchParams,

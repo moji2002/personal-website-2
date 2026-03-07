@@ -1,5 +1,6 @@
 "use client";
 
+import { useReduceMotion } from "@/components/reduce-motion-provider";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "motion/react";
 import { useMemo } from "react";
@@ -27,12 +28,19 @@ const BlurFadeText = ({
   yOffset = 8,
   animateByCharacter = false,
 }: BlurFadeTextProps) => {
+  const reduceMotion = useReduceMotion();
   const defaultVariants: Variants = {
     hidden: { y: -yOffset, opacity: 0, filter: "blur(8px)" },
     visible: { y: 0, opacity: 1, filter: "blur(0px)" },
   };
   const combinedVariants = variant || defaultVariants;
   const characters = useMemo(() => Array.from(text), [text]);
+
+  if (reduceMotion) {
+    return (
+      <span className={cn("inline-block", className)}>{text}</span>
+    );
+  }
 
   if (animateByCharacter) {
     return (

@@ -1,5 +1,6 @@
 "use client"
 
+import { useReduceMotion } from "@/components/reduce-motion-provider"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
@@ -26,6 +27,12 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   maxOpacity = 0.3,
   ...props
 }) => {
+  const reduceMotion = useReduceMotion()
+
+  if (reduceMotion) {
+    return null
+  }
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isInView, setIsInView] = useState(false)
