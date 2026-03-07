@@ -50,12 +50,6 @@ export const DATA = {
         icon: Icons.linkedin,
         navbar: true,
       },
-      Portfolio: {
-        name: "Portfolio",
-        url: "https://this.is-a.dev",
-        icon: Icons.globe,
-        navbar: true,
-      },
       email: {
         name: "Send Email",
         url: "mailto:moji2002@gmail.com",
@@ -72,7 +66,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Senior Front-End Engineer",
-      logoUrl: "",
+      logoUrl: "https://ui-avatars.com/api/?name=Ayande+Nevisan&size=80&background=6366f1&color=fff",
       start: "Aug 2023",
       end: "Present",
       highlights: [
@@ -89,7 +83,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Front-End Developer",
-      logoUrl: "",
+      logoUrl: "https://ui-avatars.com/api/?name=Arad+Dasht&size=80&background=8b5cf6&color=fff",
       start: "Sep 2022",
       end: "Aug 2023",
       highlights: [
@@ -105,7 +99,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Front-End Developer",
-      logoUrl: "",
+      logoUrl: "https://ui-avatars.com/api/?name=Kimiagaran&size=80&background=ec4899&color=fff",
       start: "Sep 2020",
       end: "Sep 2022",
       highlights: [
@@ -121,7 +115,7 @@ export const DATA = {
       school: "Meta",
       href: "https://www.coursera.org/professional-certificates/meta-front-end-developer",
       degree: "Meta Front-End Developer Professional Certificate (via Coursera)",
-      logoUrl: "",
+      logoUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=80&h=80&fit=crop",
       start: "",
       end: "",
     },
@@ -129,7 +123,7 @@ export const DATA = {
       school: "Independent / Professional Study",
       href: "#",
       degree: "Advanced Software Engineering Immersive — Focus on Distributed Systems, React Architecture, and Performance Optimization",
-      logoUrl: "",
+      logoUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=80&h=80&fit=crop",
       start: "",
       end: "",
     },
@@ -144,7 +138,7 @@ export const DATA = {
         "Architected and deployed production-grade PWAs using Next.js with offline-first functionality and mobile responsiveness.",
       technologies: ["Next.js", "TypeScript", "PWA"],
       links: [],
-      image: "",
+      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=192&fit=crop",
       video: "",
     },
     {
@@ -156,7 +150,7 @@ export const DATA = {
         "Engineered contract-first API integration ensuring end-to-end type safety, reducing production runtime errors by approximately 90%.",
       technologies: ["Zodios", "Zod", "TypeScript"],
       links: [],
-      image: "",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=192&fit=crop",
       video: "",
     },
     {
@@ -168,7 +162,7 @@ export const DATA = {
         "Spearheaded migration of legacy PHP applications to React-based architecture, achieving 35% improvement in Core Web Vitals.",
       technologies: ["React", "TypeScript", "Next.js"],
       links: [],
-      image: "",
+      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=192&fit=crop",
       video: "",
     },
     {
@@ -180,7 +174,7 @@ export const DATA = {
         "Built Web3-integrated cryptocurrency wallet in 30 days, focusing on secure transaction signing.",
       technologies: ["React", "Web3.js", "Cryptography"],
       links: [],
-      image: "",
+      image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=192&fit=crop",
       video: "",
     },
     {
@@ -192,7 +186,7 @@ export const DATA = {
         "Developed localized store-discovery engine with geolocation APIs and advanced map filtering, improving user conversion rates.",
       technologies: ["React", "Geolocation APIs", "TypeScript"],
       links: [],
-      image: "",
+      image: "https://images.unsplash.com/photo-1524661134-4a815407dd34?w=800&h=192&fit=crop",
       video: "",
     },
   ],
