@@ -12,12 +12,24 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 
+function getInitials(companyName: string): string {
+  const words = companyName.trim().split(/\s+/);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  const name = words[0] ?? "";
+  return name.slice(0, 2).toUpperCase();
+}
+
 function LogoImage({ src, alt }: { src: string; alt: string }) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
+    const initials = getInitials(alt);
     return (
-      <div className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border bg-muted flex-none" />
+      <div className="size-8 md:size-10 flex items-center justify-center border rounded-full shadow ring-2 ring-border bg-muted flex-none text-xs font-semibold text-muted-foreground">
+        {initials}
+      </div>
     );
   }
 
