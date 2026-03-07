@@ -1,0 +1,199 @@
+---
+title: "Why I Switched to Bun (and When You Might Want To)"
+publishedAt: "2025-03-07"
+updatedAt: "2026-03-07"
+author: "John Doe"
+summary: "Bun is fast, all-in-one, and actually fun to use. Here's what sold me—and a few gotchas I ran into."
+image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=192&fit=crop"
+---
+
+# Why I Switched to Bun (and When You Might Want To)
+
+I've been using Node.js for years. It works. It's everywhere. But lately I've been reaching for Bun instead—and I'm not going back for most of my side projects. It's not just the speed (though that's real). It's that Bun bundles runtime, package manager, bundler, and test runner into one thing. No more juggling npm, tsx, Jest, and esbuild. One binary. One `bun install`. One `bun run dev`. That simplicity got me.
+
+Here's what I've learned so far and when it's worth the switch.
+
+## What Bun Actually Is
+
+Bun is a JavaScript runtime—like Node—but written in Zig. It's a drop-in replacement in a lot of cases: same `require` and `import`, same `process`, same `fetch` (built-in, no polyfill). The difference is how fast it starts and how much it does out of the box.
+
+You get a package manager (`bun install` is stupid fast), a bundler (`bun build`), a test runner (`bun test`), and TypeScript support without any config. Recent releases added built-in database clients (`Bun.SQL` for PostgreSQL, MySQL, SQLite) and security scanning. No `ts-node`. No `tsx`. Just run `bun run src/index.ts` and it works. That alone saved me a bunch of setup time on new projects.
+
+Bun's adoption has grown fast. Companies like Netflix, Spotify, X, and Midjourney run it in production. Anthropic acquired Bun in late 2025—Claude Code ships as a Bun executable to millions of users—and the project remains open-source and MIT-licensed. That kind of backing suggests it's here to stay.
+
+## The Speed Thing Is Real
+
+`bun install` on a fresh clone of a medium-sized project used to take me 30–60 seconds with npm. With Bun it's under 5. I thought my machine was slow. Turns out npm was the bottleneck. Community benchmarks back this up: Bun can finish installs in tens of milliseconds where npm takes over a second. Cold starts are often 3–4x faster, package installs can be 20–40x quicker, and memory usage can be 30–40% lower than Node.
+
+Same for script startup. A small CLI that took 200ms to boot with Node now starts in under 50ms. For long-running servers it matters less, but for scripts you run constantly—linting, type-checking, dev watchers—you feel it. My dev loop got noticeably snappier.
+
+## The All-in-One Appeal
+
+Before Bun I had: Node, npm/pnpm, tsx or ts-node, Jest, esbuild or Webpack. Each with its own config, its own quirks. Bun replaces most of that with one tool.
+
+```bash
+# Install deps
+bun install
+
+# Run a TypeScript file directly
+bun run src/index.ts
+
+# Run tests (Jest-compatible API)
+bun test
+
+# Bundle for production
+bun build ./src/index.ts --outdir=./dist --target=node
+```
+
+No `tsconfig` needed for basic runs. No `jest.config.js` for simple test setups. I've started three small projects in the last month and each one had zero config. That's the dream.
+
+## Where It Shines
+
+**CLIs and scripts** — Fast startup, native TypeScript. I rewrote a few internal tools and they're noticeably quicker.
+
+**New projects** — No legacy. No "we've always used X." Start with Bun, use `bun add`, `bun run`, `bun test`. Done.
+
+**Monorepos** — `bun install` at the root is fast. Workspaces work. I haven't hit any workspace bugs yet.
+
+**APIs and servers** — Bun has a built-in HTTP server. It's not Express, but for simple APIs it's enough. And you can still use Express/Fastify/Hono if you want—they work.
+
+**Serverless** — Cold starts matter in serverless. Bun's 3–4x faster startup pays off when you're spinning up functions on every request.
+
+## React with Bun—Zero Config
+
+This is the part that surprised me. Bun does React on its own. No Webpack, no Create React App. Bun's bundler handles JSX natively. You get fast refresh, TypeScript, and zero config.
+
+```bash
+bun create react ./my-app
+cd my-app
+bun dev
+```
+
+That's it. The dev server starts in a blink. Hot reload feels instant—Bun's bundler is built in, so there's no separate toolchain. No `webpack.config.js`, no Babel config. Just Bun.
+
+**Why it's easy**
+
+React is "just" JSX and components. Bun understands JSX out of the box. No `@babel/preset-react`, no `tsconfig` `jsx` hacks. You write a `.tsx` file, run it, and it works. For a new React project, `bun create react` gives you a working app in under 10 seconds. The `bun install` for a fresh React + React DOM + a few deps? Under 2 seconds on my machine. Compare that to npm on a cold cache.
+
+**A quick React example**
+
+After `bun create react ./my-app`, you get a standard React structure. Add a component, save, and it updates. No build step to configure:
+
+```tsx
+// src/App.tsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Clicks: {count}
+    </button>
+  );
+}
+
+export default function App() {
+  return (
+    <div>
+      <h1>Bun + React</h1>
+      <Counter />
+    </div>
+  );
+}
+```
+
+Save, and the browser updates. That's it. No Webpack or Babel config. Bun's bundler handles JSX and hooks out of the box. If you've ever spent 20 minutes debugging a Create React App setup for a new project, this feels like cheating.
+
+**Server Components and frameworks**
+
+If you're using Next.js, Remix, or another framework, Bun works there too. Next.js officially supports Bun as a runtime. `bun install` in a Next project, then `bun run dev`—same commands, faster execution. The framework handles the React part; Bun handles the runtime and package management. No special config.
+
+The bottom line: if you're spinning up a React app, Bun removes most of the friction. Fast install, fast dev, native TypeScript and JSX. It's become my default for new React projects.
+
+## Where I'm Still Cautious
+
+**Production at scale** — Node has years of battle-testing. Bun is newer. For a critical production service with millions of requests, I'd want more evidence. Some developers have raised concerns about quality and technical debt as the project grows—it's worth keeping an eye on GitHub issues if you're betting big. For side projects, internal tools, and prototypes? Bun is fine.
+
+**Ecosystem edge cases** — Most npm packages work—compatibility is around 95% for typical web apps. React, Vue, Svelte, Prisma, Express, and Hono are well supported. Edge cases remain with `node:crypto`, `node:stream`, and native addons (`.node` bindings). I hit one package that used `fs.promises` in a way Bun didn't like—had to swap it. That's rare but it happens.
+
+**CI/CD** — GitHub Actions has Bun support. So do most providers. But if you're on some custom pipeline, double-check. Adding Bun to a Docker image is straightforward: `FROM oven/bun` and you're good.
+
+## A Quick Example
+
+Here's a minimal API I threw together the other day:
+
+```ts
+// server.ts
+const server = Bun.serve({
+  port: 3000,
+  fetch(req) {
+    const url = new URL(req.url);
+    if (url.pathname === "/") {
+      return new Response("Hello from Bun");
+    }
+    if (url.pathname === "/json") {
+      return Response.json({ ok: true, timestamp: Date.now() });
+    }
+    return new Response("Not found", { status: 404 });
+  },
+});
+
+console.log(`Listening on http://localhost:${server.port}`);
+```
+
+Run it with `bun run server.ts`. No `package.json` needed for that. No `tsconfig`. It just works.
+
+## Hono + Bun: APIs and Full-Stack
+
+When the raw `Bun.serve` gets too manual—middleware, routing, validation—I reach for Hono. It's a tiny web framework that runs everywhere: Bun, Node, Deno, Cloudflare Workers, AWS Lambda, Vercel Edge. Same code, different runtimes. The Bun adapter is first-class, and the combo is fast.
+
+Hono has been described as "quietly taking over the edge" and "the new default" for modern backends—it's under 14KB minified with zero dependencies, and it consistently outperforms Express, Koa, and Fastify in benchmarks. Bun + Hono can hit 110,000+ requests per second in raw throughput tests. Developers on DEV have said things like "Switching from Node + Express to Hono + Bun and I'm not looking back." Hono ships CORS, JWT, and validation built-in—no external middleware deps. Production users include OpenStatus and others. The framework is built for edge and serverless from the ground up, so if you ever need to move to Cloudflare Workers, Deno Deploy, or Vercel, your Hono app mostly just works.
+
+**Install and run**
+
+```bash
+bun add hono
+```
+
+```ts
+// src/index.ts
+import { Hono } from "hono";
+
+const app = new Hono();
+
+app.get("/", (c) => c.text("Hello from Hono + Bun"));
+app.get("/api/users", (c) => c.json({ users: [] }));
+app.post("/api/users", async (c) => {
+  const body = await c.req.json();
+  return c.json({ id: "1", ...body }, 201);
+});
+
+Bun.serve({
+  port: 3000,
+  fetch: app.fetch,
+});
+```
+
+Run with `bun run src/index.ts`. Hono's `app.fetch` plugs straight into Bun's server. No extra config.
+
+**Middleware, params, and more**
+
+Hono gives you what you'd expect: middleware (auth, CORS, logging), path params, query params, typed responses. It's Express-like but smaller and faster. For an API that needs a few routes and maybe some auth, this is my go-to.
+
+**Hono + React**
+
+You can serve a React app from Hono too. Use `@hono/react-renderer` for server-side rendering, or run Hono as your API and serve a static React build. I've done both—Hono for `/api/*`, static files for the rest. Clean separation, one server, one `bun run dev`.
+
+The nice part: if you ever need to move off Bun (edge, serverless, whatever), your Hono app mostly just works. Swap the adapter, deploy. That portability sold me.
+
+## The Package Manager
+
+`bun add` and `bun install` use a different lockfile format (`bun.lockb`—binary). It's fast. It's also not compatible with npm's `package-lock.json`. If you're on a team that's all-in on npm, switching the whole project to Bun's package manager is a commitment. You can still use `bun run` with an existing `package-lock.json`—Bun will read it—but you lose some of the speed benefits.
+
+For solo projects or teams willing to standardize on Bun, it's worth it. `bun install` is the first thing people notice.
+
+## Wrap-up
+
+Bun isn't a Node killer. Node isn't going anywhere. But for the stuff I'm building right now—CLIs, small APIs, side projects—Bun is my default. It's faster, simpler, and the DX is better. The ecosystem is still catching up in a few places, but for 90% of what I do, it's ready.
+
+If you're starting something new, give it a shot. `curl -fsSL https://bun.sh/install | bash`, then `bun init` in an empty folder. See how it feels. You might not go back either.
