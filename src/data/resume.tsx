@@ -43,7 +43,7 @@ export const DATA = {
   ],
   contact: {
     email: "moji2002@gmail.com",
-    tel: "+98 XXX XXX XXXX",
+    tel: "+98 XXX XXX XXXX", // placeholder
     social: {
       GitHub: {
         name: "GitHub",
@@ -69,11 +69,11 @@ export const DATA = {
   work: [
     {
       company: "Ayande Nevisan",
-      href: "#",
+      href: "#", // placeholder
       badges: [],
       location: "Remote",
       title: "Senior Full-Stack Developer",
-      logoUrl: "",
+      logoUrl: "", // placeholder
       start: "Aug 2023",
       end: "Present",
       description:
@@ -81,11 +81,11 @@ export const DATA = {
     },
     {
       company: "Arad Dasht",
-      href: "#",
+      href: "#", // placeholder
       badges: [],
       location: "Remote",
       title: "Frontend Developer",
-      logoUrl: "",
+      logoUrl: "", // placeholder
       start: "Sep 2022",
       end: "Aug 2023",
       description:
@@ -93,11 +93,11 @@ export const DATA = {
     },
     {
       company: "Kimiagaran",
-      href: "#",
+      href: "#", // placeholder
       badges: [],
       location: "Remote",
       title: "Frontend Developer",
-      logoUrl: "",
+      logoUrl: "", // placeholder
       start: "Sep 2020",
       end: "Sep 2022",
       description:
@@ -107,17 +107,17 @@ export const DATA = {
   education: [
     {
       school: "Self-Taught Web Developer",
-      href: "#",
+      href: "#", // placeholder
       degree: "Independent Learning",
-      logoUrl: "",
-      start: "",
-      end: "",
+      logoUrl: "", // placeholder
+      start: "", // placeholder
+      end: "", // placeholder
     },
     {
       school: "Meta",
       href: "https://www.meta.com",
       degree: "Meta Advanced React and JavaScript Certificate",
-      logoUrl: "",
+      logoUrl: "", // placeholder
       start: "2023",
       end: "2023",
     },
@@ -125,8 +125,8 @@ export const DATA = {
   projects: [
     {
       title: "Crypto Exchange Platform",
-      href: "#",
-      dates: "",
+      href: "#", // placeholder
+      dates: "", // placeholder
       active: true,
       description:
         "Scalable order matching system using RabbitMQ and WebSocket. Reduced latency for high-volume transactions, supporting 1M+ daily trading requests.",
@@ -138,56 +138,56 @@ export const DATA = {
         "Node.js",
       ],
       links: [],
-      image: "",
-      video: "",
+      image: "", // placeholder
+      video: "", // placeholder
     },
     {
       title: "Multi-language PWA Suite",
-      href: "#",
-      dates: "",
+      href: "#", // placeholder
+      dates: "", // placeholder
       active: true,
       description:
         "Delivered 3 mobile-first products in 1 month. Enabled 4-language support including RTL localization using Next.js 14, TypeScript, and i18next.",
       technologies: ["Next.js", "TypeScript", "i18next", "PWA"],
       links: [],
-      image: "",
-      video: "",
+      image: "", // placeholder
+      video: "", // placeholder
     },
     {
       title: "Legacy System Migration",
-      href: "#",
-      dates: "",
+      href: "#", // placeholder
+      dates: "", // placeholder
       active: true,
       description:
         "Modernized 5 PHP projects to React & TypeScript, improving UI/UX and maintainability. Achieved 30% faster page loads.",
       technologies: ["React", "TypeScript", "Next.js"],
       links: [],
-      image: "",
-      video: "",
+      image: "", // placeholder
+      video: "", // placeholder
     },
     {
       title: "Cryptocurrency Wallet",
-      href: "#",
-      dates: "",
+      href: "#", // placeholder
+      dates: "", // placeholder
       active: true,
       description:
         "Developed robust wallet application using React, Node.js, and Web3. Cut app startup time by 20% through optimization.",
       technologies: ["React", "Node.js", "Web3", "Cryptography"],
       links: [],
-      image: "",
-      video: "",
+      image: "", // placeholder
+      video: "", // placeholder
     },
     {
       title: "WordPress to Next.js Redesign",
-      href: "#",
-      dates: "",
+      href: "#", // placeholder
+      dates: "", // placeholder
       active: true,
       description:
         "Led migration from WordPress to Next.js, increasing engagement by 8%, Time-on-Site by 25%, and Web Vitals by 40%.",
       technologies: ["Next.js", "React", "TypeScript"],
       links: [],
-      image: "",
-      video: "",
+      image: "", // placeholder
+      video: "", // placeholder
     },
   ],
   hackathons: [] as Array<{
