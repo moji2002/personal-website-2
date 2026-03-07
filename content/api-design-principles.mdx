@@ -1,7 +1,7 @@
 ---
 title: "REST API Design Principles That Stand the Test of Time"
 publishedAt: "2024-12-12"
-updatedAt: "2024-12-12"
+updatedAt: "2025-03-07"
 author: "John Doe"
 summary: "Learn how to design APIs that developers love to use and are easy to maintain."
 image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=192&fit=crop"
@@ -9,25 +9,91 @@ image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=192&fi
 
 # REST API Design Principles That Stand the Test of Time
 
-Great APIs feel boring in the best way: predictable, consistent, and easy to reason about. When the surface area is simple, teams ship faster and clients break less often.
+Bad APIs cost you. Every time a client has to guess whether the field is `user_id` or `userId`, or whether a 404 means "not found" or "you don't have permission," you're adding friction. I've seen teams spend more time wrestling with their own API than building features. The fix isn't more features—it's consistency.
 
-This is a lightweight checklist you can keep in mind while designing new endpoints or reviewing an existing API.
+Great APIs feel boring in the best way: predictable, consistent, and easy to reason about. When the surface area is simple, teams ship faster and clients break less often. Here's a lightweight checklist you can keep in mind while designing new endpoints or reviewing an existing API.
 
-## Core principles
+## Resource naming
 
-- Use clear, consistent **resource names** (think nouns).
-- Keep behavior aligned with **HTTP semantics** (read vs write).
-- Return **consistent response shapes** so clients don’t guess.
-- Prefer **sane defaults** with optional query parameters for filtering/sorting.
+Use clear, consistent resource names. Nouns, plural. That's the convention most developers expect, and fighting it just confuses everyone.
+
+Good: `/users`, `/orders`, `/projects/123/tasks`. Bad: `/getUser`, `/createOrder`, `/project_tasks` (is it one project or many?). The last one I ran into returned an array for a single project—took an hour to figure out. Stick to plural nouns and nested resources for relationships.
+
+## HTTP semantics
+
+Keep behavior aligned with HTTP. GET for reads, POST for creates, PUT/PATCH for updates, DELETE for deletes. Don't use POST for everything because "it's easier." It's not—clients can't cache GETs, and you lose idempotency guarantees that PUT gives you.
+
+One gotcha: use PATCH when you're updating a subset of fields. PUT usually implies "replace the whole resource," which can surprise clients when they send a partial payload.
+
+## Consistent response shapes
+
+Return the same structure every time. If your list endpoint wraps items in `{ data: [...] }`, do it everywhere. If you use `items`, stick with `items`. Don't mix `error` and `message` for error responses—pick one.
+
+```json
+// Good: same wrapper for success
+{ "data": { "id": "123", "name": "Acme" } }
+
+// Good: same wrapper for list
+{ "data": [ { "id": "123", "name": "Acme" } ] }
+
+// Bad: sometimes wrapped, sometimes not
+{ "id": "123", "name": "Acme" }  // single item
+{ "data": [...] }                 // list — now the client needs two code paths
+```
+
+## Sane defaults and optional params
+
+Prefer sensible defaults with optional query parameters for filtering and sorting. `?sort=created_at&order=desc` is fine. Don't force clients to pass 10 params when 2 would do. And document what the defaults are—nothing worse than "it works" in prod but behaves differently than you thought.
 
 ## A simple checklist
 
-1. Pick stable resource paths (plural nouns are a common convention).
-2. Use a small set of status codes consistently.
-3. Document pagination and what “next/previous” means.
-4. Be explicit about authentication and authorization requirements.
-5. Add brief examples in docs for the “happy path” and common errors.
+1. **Stable resource paths** — Plural nouns. No verbs in the path.
+2. **Small set of status codes** — 200, 201, 400, 401, 403, 404, 500. Use them consistently.
+3. **Pagination** — Document what `next` and `previous` mean. Cursor-based is often better than offset for large datasets.
+4. **Auth** — Be explicit. Header? Query param? Which endpoints need it?
+5. **Docs** — Happy path + one or two common errors. That's usually enough to unblock someone.
+
+## Concrete example
+
+Here's what a minimal, consistent endpoint might look like:
+
+```
+GET /api/v1/projects?status=active&limit=20
+Authorization: Bearer <token>
+```
+
+Response:
+
+```json
+{
+  "data": [
+    { "id": "proj_1", "name": "Website", "status": "active" }
+  ],
+  "pagination": {
+    "next": "proj_1",
+    "has_more": true
+  }
+}
+```
+
+Error (same wrapper idea, different top-level key):
+
+```json
+{
+  "error": {
+    "code": "unauthorized",
+    "message": "Invalid or expired token"
+  }
+}
+```
+
+## Common pitfalls
+
+- **Versioning** — Put it in the path (`/v1/`) or header. Don't wait until you need it; adding it later is painful.
+- **Nested resources** — `/projects/123/tasks` is fine. `/projects/123/tasks/456/comments/789` gets silly. Flatten when it goes too deep.
+- **Over-fetching** — Let clients request fields. `?fields=id,name` can save a lot of payload for mobile.
+- **Breaking changes** — Add fields, don't remove them. Deprecate first, then remove in a major version.
 
 ## Wrap-up
 
-If you optimize for consistency first, your API will be easier to document, easier to test, and easier for others to adopt.
+If you optimize for consistency first, your API will be easier to document, easier to test, and easier for others to adopt. Start with these basics, write them down, and iterate as you learn what your clients actually need.

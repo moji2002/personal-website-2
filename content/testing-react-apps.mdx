@@ -1,7 +1,7 @@
 ---
 title: "Testing React Applications: A Practical Guide"
 publishedAt: "2024-12-14"
-updatedAt: "2024-12-14"
+updatedAt: "2025-03-07"
 author: "John Doe"
 summary: "From unit tests to E2E—learn how to build confidence in your React applications with comprehensive testing."
 image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=192&fit=crop"
@@ -9,28 +9,119 @@ image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=192
 
 # Testing React Applications: A Practical Guide
 
-Tests are your safety net — they let you refactor with confidence and ship changes without fear. The goal is not “as many tests as possible”; it’s <mark>confidence in the critical paths</mark>.
+Tests are your safety net — they let you refactor with confidence and ship changes without fear. The goal is not "as many tests as possible"; it's <mark>confidence in the critical paths</mark>.
 
-If your test suite feels slow or fragile, it usually means you’re testing the wrong thing. In practice, you can ignore a lot of “perfect coverage” advice and focus on a few high-signal habits.
+If your test suite feels slow or fragile, it usually means you're testing the wrong thing. In practice, you can ignore a lot of "perfect coverage" advice and focus on a few high-signal habits.
+
+## A stack that works
+
+I've settled on Vitest + React Testing Library + Playwright for most projects. Vitest is fast and has great DX (no Jest config wrestling). React Testing Library pushes you toward queries that mirror how users interact. Playwright for E2E — it's reliable, and the trace viewer has saved me more than once when a flaky test finally failed in CI.
+
+If you're on an existing codebase with Jest, don't rewrite everything. Jest is fine. The patterns below apply either way.
 
 ## What to test (a simple rule)
 
-- **Unit tests**: small, fast checks for logic and pure functions.
-- **Integration tests**: components + data + user flows (most value per test).
-- **E2E tests**: a few happy-path checks across the whole app.
+- **Unit tests**: small, fast checks for logic and pure functions. Things like formatters, validators, reducers.
+- **Integration tests**: components + data + user flows. This is where you get the most value per test — a single test can cover "user fills form, submits, sees success message" without mocking the whole world.
+- **E2E tests**: a few happy-path checks across the whole app. Login, checkout, whatever your core flow is. Keep the count low; they're slow and expensive to maintain.
+
+## Unit test example
+
+For pure logic, keep it simple:
+
+```ts
+// formatPrice.ts
+export function formatPrice(cents: number, currency = "USD"): string {
+  if (cents < 0) throw new Error("Price cannot be negative");
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+  }).format(cents / 100);
+}
+```
+
+```ts
+// formatPrice.test.ts
+import { describe, it, expect } from "vitest";
+import { formatPrice } from "./formatPrice";
+
+describe("formatPrice", () => {
+  it("formats cents as dollars", () => {
+    expect(formatPrice(1999)).toBe("$19.99");
+  });
+
+  it("throws for negative amounts", () => {
+    expect(() => formatPrice(-100)).toThrow("Price cannot be negative");
+  });
+});
+```
+
+No React, no render, no setup. Just input and output.
+
+## Integration test example
+
+For components, test behavior from the user's perspective:
+
+```tsx
+import { render, screen, userEvent } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { LoginForm } from "./LoginForm";
+
+describe("LoginForm", () => {
+  it("shows error when password is empty", async () => {
+    const user = userEvent.setup();
+    render(<LoginForm onSubmit={vi.fn()} />);
+
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.click(screen.getByRole("button", { name: /sign in/i }));
+
+    expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+  });
+});
+```
+
+Notice we're using `getByLabelText` and `getByRole` — accessible queries. If your component isn't accessible, the test will push you to fix that. Win-win.
+
+## E2E test example
+
+One or two critical flows. Here's a Playwright snippet for a checkout:
+
+```ts
+import { test, expect } from "@playwright/test";
+
+test("user can complete checkout", async ({ page }) => {
+  await page.goto("/products");
+  await page.getByRole("button", { name: "Add to cart" }).first().click();
+  await page.getByRole("link", { name: "Cart" }).click();
+  await page.getByRole("button", { name: "Checkout" }).click();
+
+  await page.getByLabel("Email").fill("test@example.com");
+  await page.getByLabel("Card number").fill("4242424242424242");
+  await page.getByRole("button", { name: "Pay" }).click();
+
+  await expect(page.getByText("Order confirmed")).toBeVisible({ timeout: 10000 });
+});
+```
+
+Run these against a real (or close-to-real) environment. Stubbing payment in E2E defeats the purpose.
 
 ## High-signal testing habits
 
-- Prefer user-facing assertions (what the user sees/does).
-- Use accessible queries first (roles, labels).
-- Mock at the boundary (network) instead of mocking implementation details.
+- Prefer user-facing assertions. "User sees error message" beats "state.error is set".
+- Use accessible queries first (roles, labels). Fall back to `data-testid` only when there's no semantic hook.
+- Mock at the boundary. Mock your API client or MSW handlers, not individual functions inside your components. When you refactor internals, tests shouldn't break.
 
 ## Things to avoid
 
-- ~~Testing internal component state~~ when behavior is what matters.
-- ~~Sprinkling test IDs everywhere~~ as a first choice.
-- Overusing snapshots that fail for harmless UI changes.
+- **Testing internal component state** when behavior is what matters. If the user doesn't care whether something is in state vs derived, your test shouldn't either.
+- **Sprinkling test IDs everywhere** as a first choice. They're a last resort. Accessible markup is easier to query and better for real users.
+- **Overusing snapshots** that fail for harmless UI changes. A snapshot of a whole page is noise. A snapshot of a serialized API response can be useful.
+- **Testing implementation details** like "did we call setState with the right args?" — that couples your test to how you built it, not what it does.
+
+## Test organization
+
+I keep tests next to the code: `Button.tsx` and `Button.test.tsx` in the same folder. For larger modules, a `__tests__` directory works. Naming: `describe` blocks for the unit, `it` for the scenario. "should display error when..." is fine; "test 1" is not.
 
 ## Wrap-up
 
-Start small: one integration test for your most important flow, then add unit tests for tricky logic. Over time, your tests become living documentation that helps you move faster.
+Start small: one integration test for your most important flow, then add unit tests for tricky logic. Over time, your tests become living documentation that helps you move faster. When something breaks, you'll be glad you had that checkout test.

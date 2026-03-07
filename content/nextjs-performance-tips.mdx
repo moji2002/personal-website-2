@@ -1,17 +1,23 @@
 ---
 title: "10 Next.js Performance Tips for Production Apps"
 publishedAt: "2024-12-05"
-updatedAt: "2024-12-05"
+updatedAt: "2025-03-07"
 author: "John Doe"
 summary: "Practical optimization techniques to make your Next.js applications blazing fast in production."
 image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=192&fit=crop"
 ---
 
-Performance isn't optional—it's a feature. Here are battle-tested tips for optimizing Next.js apps.
+Performance isn't optional—it's a feature. I've shipped a few Next.js apps that started fast and then slowed down as features piled on. The usual culprits: too much client JS, unoptimized assets, and caching that either didn't exist or was wrong for the use case. Here are 10 tips that actually moved the needle.
 
-# 2. Optimize Images
+## 1. Lean on Server Components
 
-Always use `next/image`
+If you're still on the Pages Router, the App Router is worth the migration for performance alone. Server Components don't ship JavaScript to the client—they render on the server and send HTML. That means your bundle stays smaller and your Time to Interactive drops.
+
+The rule of thumb: default to Server Components. Only add `'use client'` when you need interactivity—event handlers, `useState`, browser APIs. I've seen pages cut their JS bundle by 40% just by moving static content out of client components. The docs push this hard for a reason.
+
+## 2. Optimize Images
+
+Always use `next/image`. It handles lazy loading, responsive sizes, and modern formats (WebP, AVIF) automatically. The biggest mistake I see: forgetting `sizes` on responsive images. Without it, Next.js assumes the image fills the viewport and can over-fetch.
 
 ```tsx
 import Image from 'next/image';
@@ -23,34 +29,156 @@ export function Hero() {
       alt="Hero image"
       width={1200}
       height={600}
-      priority // Load immediately for LCP
-      // placeholder="blur"
-      // blurDataURL="data:image/jpeg;base64,..."
+      priority // Load immediately for LCP—use sparingly, only for above-the-fold
+      sizes="(max-width: 768px) 100vw, 1200px"
     />
   );
 }
 ```
 
+For hero images, add `priority` so they don't wait for lazy loading. For everything else, let the default lazy loading do its job. Blur placeholders are nice but optional—don't block shipping on them.
+
+## 3. Code Split Heavy Components
+
+That charting library or PDF viewer doesn't need to load on first paint. Use `next/dynamic` with `ssr: false` for client-only stuff, or leave `ssr` default for components that can render on the server.
+
+```tsx
+import dynamic from 'next/dynamic';
+
+const HeavyChart = dynamic(() => import('@/components/HeavyChart'), {
+  loading: () => <ChartSkeleton />,
+  ssr: false, // if it uses window or doesn't need SEO
+});
+```
+
+We had a dashboard that loaded Recharts on every page. Moving it to a dynamic import cut the initial bundle by ~80KB. Users who never opened the charts tab never paid that cost.
 
 ## 4. Implement Proper Caching
 
+Next.js gives you a few knobs. Use them deliberately.
+
 | Strategy | Use Case | TTL |
 |----------|----------|-----|
-| `force-cache` | Static data | Forever |
-| `revalidate: 3600` | Semi-static | 1 hour |
-| `revalidate: 60` | Frequently updated | 1 minute |
-| `no-store` | Real-time data | Never cache |
+| `force-cache` | Static data, rarely changes | Forever (until rebuild) |
+| `revalidate: 3600` | Semi-static (product catalog, blog) | 1 hour |
+| `revalidate: 60` | Frequently updated (inventory, prices) | 1 minute |
+| `no-store` | Real-time (live scores, chat) | Never cache |
+
+```tsx
+// Static product page—cache until next deploy
+export const revalidate = false;
+
+// Blog with hourly updates
+export const revalidate = 3600;
+
+// Fetch with custom revalidation
+const res = await fetch(url, { next: { revalidate: 60 } });
+```
+
+The trap: defaulting to `no-store` everywhere because you're scared of stale data. Most pages can tolerate a minute or an hour of staleness. Start with `revalidate: 3600` and tighten where it hurts.
 
 ## 5. Minimize Client Components
 
-Every `'use client'` directive adds to your JavaScript bundle. Keep client components small and focused:
+Every `'use client'` directive pulls that file (and its dependencies) into the client bundle. Keep client boundaries as low as possible—wrap only the interactive part, not the whole page.
 
-## 6. Bundle Analysis
+Bad: a `ProductPage` that's entirely a client component because one "Add to cart" button needs `onClick`. Good: a Server Component that renders a small `AddToCartButton` client component.
 
-```bash title="terminal"
-# Install analyzer
-npm install @next/bundle-analyzer
-
-# Run analysis
-ANALYZE=true npm run build
+```tsx
+// ProductPage.tsx (Server Component—no 'use client')
+export default async function ProductPage({ params }) {
+  const product = await fetchProduct(params.id);
+  return (
+    <article>
+      <h1>{product.name}</h1>
+      <p>{product.description}</p>
+      <AddToCartButton productId={product.id} /> {/* only this is client */}
+    </article>
+  );
+}
 ```
+
+I've also seen teams put `'use client'` on layout files that only pass children through. That forces the entire app to hydrate. Push it down.
+
+## 6. Run Bundle Analysis
+
+You can't fix what you don't measure. Add the bundle analyzer and run it occasionally.
+
+```bash
+npm install @next/bundle-analyzer
+```
+
+In `next.config.js`:
+
+```js
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+module.exports = withBundleAnalyzer(nextConfig);
+```
+
+Then: `ANALYZE=true npm run build`. You'll get a treemap of what's in your bundles. Look for duplicates (same lib in multiple chunks), unexpectedly large dependencies, and things that could be dynamic imports. Moment.js and Lodash are classic offenders—use `lodash-es` and tree-shake, or replace with smaller alternatives.
+
+## 7. Optimize Fonts with next/font
+
+Custom fonts block rendering if you load them from a CDN. `next/font` inlines them at build time and eliminates layout shift.
+
+```tsx
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
+
+export default function RootLayout({ children }) {
+  return (
+    <html className={inter.className}>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+`display: 'swap'` shows fallback text immediately, then swaps when the font loads. Avoid `display: 'block'` unless you have a good reason—it can leave invisible text for a bit.
+
+## 8. Use Route Segment Config
+
+You can set `dynamic`, `revalidate`, and `runtime` per route segment. No need to configure everything in one place.
+
+```tsx
+// app/dashboard/page.tsx
+export const dynamic = 'force-dynamic'; // opt out of static
+export const revalidate = 60; // or revalidate every 60 seconds
+```
+
+`dynamic = 'force-dynamic'` is useful for pages that must always be fresh (e.g. a user's private dashboard). For public content, `revalidate` usually does the job without sacrificing static generation.
+
+## 9. Use Streaming and Suspense
+
+Long data fetches don't have to block the whole page. Wrap slow sections in `<Suspense>` and let the shell render first. Users see something immediately; the rest streams in.
+
+```tsx
+export default function Page() {
+  return (
+    <>
+      <Header />
+      <Suspense fallback={<ReviewsSkeleton />}>
+        <Reviews />
+      </Suspense>
+      <Suspense fallback={<RelatedProductsSkeleton />}>
+        <RelatedProducts />
+      </Suspense>
+    </>
+  );
+}
+```
+
+This improves TTFB and perceived performance. The page feels faster even if total load time is similar—people care more about when content appears than when the last byte arrives.
+
+## 10. Monitor in Production
+
+Local builds don't reflect real users. Add Core Web Vitals tracking—Vercel does it out of the box, or use `web-vitals` and send to your analytics. Watch LCP, FID/INP, and CLS. Set a budget and alert when regressions happen.
+
+We caught a 2x LCP regression from a new dependency that only showed up in production. Without monitoring, it would've shipped.
+
+---
+
+Start with Server Components and image optimization—they're the biggest wins. Then add caching, trim client components, and run the bundle analyzer. The rest compounds from there.

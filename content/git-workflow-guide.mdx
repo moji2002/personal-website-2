@@ -1,7 +1,7 @@
 ---
 title: "Git Workflow Guide: From Chaos to Clarity"
 publishedAt: "2024-12-10"
-updatedAt: "2024-12-10"
+updatedAt: "2025-03-07"
 author: "John Doe"
 summary: "Master Git workflows that keep your team productive and your codebase healthy."
 image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=800&h=192&fit=crop"
@@ -9,7 +9,7 @@ image: "https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=800&h=192&fi
 
 # Git Workflow Guide: From Chaos to Clarity
 
-Git is powerful, but teams usually struggle because they don’t agree on a few basics. A simple workflow keeps history readable, reviews focused, and releases less stressful.
+Git is powerful, but teams usually struggle because they don't agree on a few basics. A simple workflow keeps history readable, reviews focused, and releases less stressful. I've seen teams waste hours in merge conflicts and "who changed what" debates—almost always because they never wrote down the rules.
 
 This is a lightweight guide you can adopt in a day and iterate on later.
 
@@ -20,11 +20,58 @@ This is a lightweight guide you can adopt in a day and iterate on later.
 - Open a pull request early and ask for review.
 - Merge back to `main` once tests pass.
 
+That's it. The hard part is sticking to it when you're in a rush.
+
+## Branch naming
+
+Pick one convention and stick with it. I prefer `type/short-description`:
+
+```bash
+# Feature work
+git checkout -b feat/user-profile-settings
+git checkout -b feat/add-checkout-flow
+
+# Bug fixes
+git checkout -b fix/login-redirect-loop
+git checkout -b fix/navbar-overflow-mobile
+
+# Chores (deps, config, refactors)
+git checkout -b chore/upgrade-react-19
+git checkout -b refactor/extract-auth-logic
+```
+
+Some teams use ticket numbers: `JIRA-123-add-login`. Either works—just pick one and document it. Nothing worse than a `main` branch with `john-branch`, `john-branch-2`, and `john-final` mixed in.
+
 ## Commit message tips
 
-- Start with a clear verb (“add”, “fix”, “remove”, “refactor”).
+- Start with a clear verb ("add", "fix", "remove", "refactor").
 - Keep the first line short and specific.
-- Prefer multiple small commits over one giant “WIP”.
+- Prefer multiple small commits over one giant "WIP".
+
+Good: `fix: resolve infinite loop when cart is empty`. Bad: `fix stuff`. The first line shows up in `git log` and in merge commits—make it useful.
+
+If you need more context, add a blank line and a body:
+
+```
+fix: resolve infinite loop when cart is empty
+
+The useEffect was re-running because we were creating a new
+object reference on every render. Switched to stable dependency.
+```
+
+## Rebase vs merge
+
+Use **rebase** for your own branch before opening a PR—keeps history linear and readable. Use **merge** when bringing the PR into `main` (or whatever your default branch is).
+
+```bash
+# Before opening a PR: sync with main and rebase
+git fetch origin main
+git rebase origin/main
+```
+
+If you've already pushed and someone else is on your branch, don't rebase—you'll rewrite their history. For shared branches, merge.
+
+When to use merge instead of rebase: when the branch is shared, or when your team explicitly prefers merge commits. Some teams like the "merge bubble" as a clear "this was a feature" marker. YMMV.
 
 ## PR checklist
 
@@ -33,6 +80,59 @@ This is a lightweight guide you can adopt in a day and iterate on later.
 3. Add tests (or explain why not).
 4. Keep the diff small enough to review quickly.
 
+A template helps. Here's one we've used:
+
+```markdown
+## What
+Brief description of the change.
+
+## Why
+Why this change is needed (link to issue if applicable).
+
+## How to test
+1. Checkout this branch
+2. Run `npm run dev`
+3. Go to /settings and verify X works
+```
+
+## Conflict resolution
+
+Conflicts happen. When they do:
+
+1. Pull the latest `main` and rebase (or merge) into your branch.
+2. Open the conflicted files—Git marks them with `<<<<<<<`, `=======`, `>>>>>>>`.
+3. Resolve by choosing the right code, removing the markers, and saving.
+4. `git add` the resolved files and continue the rebase: `git rebase --continue`.
+
+If it gets messy, `git rebase --abort` and try a merge instead. No shame in that.
+
+## Example workflow
+
+End-to-end, from idea to merged PR:
+
+```bash
+# 1. Create branch
+git checkout main
+git pull origin main
+git checkout -b feat/dark-mode-toggle
+
+# 2. Make changes, commit often
+git add src/components/ThemeToggle.tsx
+git commit -m "add: dark mode toggle component"
+
+git add src/hooks/useTheme.ts
+git commit -m "add: useTheme hook with localStorage persistence"
+
+# 3. Sync with main before opening PR
+git fetch origin main
+git rebase origin/main
+
+# 4. Push and open PR
+git push -u origin feat/dark-mode-toggle
+```
+
+After review and approval, merge. Delete the branch. Move on.
+
 ## Wrap-up
 
-The goal isn’t “perfect Git” — it’s fewer surprises and faster collaboration. Start simple, write down the rules, and improve them as your team grows.
+The goal isn't "perfect Git"—it's fewer surprises and faster collaboration. Start simple, write down the rules, and improve them as your team grows. The teams that document their workflow once and stick to it spend a lot less time untangling history.

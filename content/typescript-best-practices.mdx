@@ -1,7 +1,7 @@
 ---
 title: "TypeScript Best Practices for Clean, Maintainable Code"
 publishedAt: "2024-12-08"
-updatedAt: "2024-12-08"
+updatedAt: "2025-03-07"
 author: "John Doe"
 summary: "Essential TypeScript patterns and practices that will make your codebase more robust and easier to maintain."
 image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=192&fit=crop"
@@ -9,7 +9,7 @@ image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=192&fi
 
 # TypeScript Best Practices for Clean, Maintainable Code
 
-TypeScript shines when it helps you model reality — not when it forces you to fight types all day. A few small defaults can make a codebase feel <mark>calmer, safer, and easier to refactor</mark>.
+TypeScript shines when it helps you model reality — not when it forces you to fight types all day. A few small defaults can make a codebase feel <mark>calmer, safer, and easier to refactor</mark>. I've seen teams turn it off because "it's too strict" — usually that means they turned it on late. Fix the sharp edges early and you won't regret it.
 
 <MediaContainer
   src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&fit=crop"
@@ -18,12 +18,17 @@ TypeScript shines when it helps you model reality — not when it forces you to 
 
 ## Practical rules of thumb
 
-- Turn on strictness and fix the sharp edges early.
-- Prefer readable types over clever types.
-- Use unions for “one of these”, interfaces for “shape of this”.
-- Avoid `any` as a shortcut; it becomes ~~future debt~~ fast.
+**Turn on strictness from day one.** If you're adding TypeScript to an existing JS codebase, enable `strict` in small chunks. The migration pain is front-loaded; once you're there, refactors become trivial. Skipping it means you're writing JavaScript with extra steps.
+
+**Prefer readable types over clever types.** That `infer` trick you found on Stack Overflow? If the next person on your team can't read it in 10 seconds, it's not worth it. Simple interfaces and type aliases beat conditional types for 90% of use cases.
+
+**Unions for "one of these", interfaces for "shape of this".** When a value can be A or B (or C), use a union. When you're describing the shape of an object, use an interface. Mixing them up leads to awkward `extends` chains and `&` soup.
+
+**Avoid `any` as a shortcut.** It spreads. One `any` in a function signature infects every caller. If you're stuck, reach for `unknown` first — it forces you to narrow before use. Reserve `any` for escape hatches (third-party libs, JSON.parse) and add a comment explaining why.
 
 ## One pattern worth memorizing
+
+Discriminated unions are the pattern I use most. They model "success or failure" cleanly and give you exhaustiveness checking for free:
 
 ```ts
 type Result<T> =
@@ -34,8 +39,56 @@ export function parseNumber(input: string): Result<number> {
   const n = Number(input);
   return Number.isFinite(n) ? { ok: true, value: n } : { ok: false, error: "Not a number" };
 }
+
+// Usage: TypeScript narrows automatically
+const result = parseNumber(userInput);
+if (result.ok) {
+  console.log(result.value); // number
+} else {
+  console.error(result.error); // string
+}
 ```
+
+The `ok` field is the discriminator. Switch on it and TypeScript knows which branch you're in. No type assertions, no `as`.
+
+## Strict mode: what to enable
+
+`strict: true` in tsconfig is a good start. It flips on `strictNullChecks`, `strictFunctionTypes`, and a few others. The one that catches the most bugs in my experience is `strictNullChecks` — it forces you to handle `null` and `undefined` explicitly instead of hoping they never show up.
+
+`noUncheckedIndexedAccess` is optional but worth considering. It makes `array[i]` return `T | undefined` instead of `T`, which prevents the classic "assumed the index exists" bug. It's noisy at first; enable it on new code or during a cleanup sprint.
+
+## When to use `unknown` vs `any`
+
+`unknown` is "I don't know what this is yet." You have to narrow it before you can use it. That's the point — it blocks you from calling methods or accessing properties until you've validated the shape.
+
+`any` is "turn off type checking here." Use it when you're integrating with untyped code and you've accepted the risk. Prefer `unknown` + type guards when you're parsing external data:
+
+```ts
+function isUserResponse(obj: unknown): obj is { id: string; name: string } {
+  return (
+    typeof obj === "object" &&
+    obj !== null &&
+    "id" in obj &&
+    "name" in obj &&
+    typeof (obj as { id: unknown }).id === "string" &&
+    typeof (obj as { name: unknown }).name === "string"
+  );
+}
+
+const data = await fetchUser(); // unknown from fetch
+if (isUserResponse(data)) {
+  console.log(data.name); // safe
+}
+```
+
+A bit verbose, but you only write the guard once. Zod and similar libs automate this if you prefer.
+
+## Tooling
+
+**ESLint** with `@typescript-eslint` catches a lot of the "why did you do that" cases. Rules like `no-explicit-any` and `strict-boolean-expressions` keep the worst habits at bay. Tune them to your team — some rules are too noisy for legacy codebases.
+
+`@ts-expect-error` over `@ts-ignore` when you need to suppress an error. The former fails the build if the error goes away (meaning the suppression is now stale). The latter stays forever. Use `@ts-expect-error` with a short comment explaining why.
 
 ## Wrap-up
 
-The best TypeScript code reads like good documentation: clear names, predictable shapes, and errors that point you to the fix.
+The best TypeScript code reads like good documentation: clear names, predictable shapes, and errors that point you to the fix. Start strict, prefer `unknown` over `any`, and lean on discriminated unions. Your future self will thank you.
