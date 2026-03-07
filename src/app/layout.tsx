@@ -83,6 +83,7 @@ export default async function RootLayout({
           geist.variable,
           geistMono.variable
         )}
+        suppressHydrationWarning
       >
         <ReduceMotionProvider reduceMotion={reduceMotion}>
           <ThemeProvider attribute="class" defaultTheme="light">
