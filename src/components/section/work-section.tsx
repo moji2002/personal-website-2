@@ -84,7 +84,7 @@ export default function WorkSection() {
                 ))}
               </ul>
             ) : (
-              work.description
+              (work as { description?: string }).description ?? null
             )}
           </AccordionContent>
         </AccordionItem>
