@@ -17,6 +17,8 @@ interface BlurFadeProps {
   inView?: boolean;
   inViewMargin?: string;
   blur?: string;
+  /** When true, content paints immediately (visible) for LCP. No animation delay. */
+  initialVisible?: boolean;
 }
 const BlurFade = ({
   children,
@@ -28,6 +30,7 @@ const BlurFade = ({
   inView = false,
   inViewMargin = "-50px",
   blur = "6px",
+  initialVisible = false,
 }: BlurFadeProps) => {
   const reduceMotion = useReduceMotion();
   const ref = useRef(null);
@@ -42,7 +45,7 @@ const BlurFade = ({
   };
   const combinedVariants = variant || defaultVariants;
 
-  if (reduceMotion) {
+  if (reduceMotion ) {
     return (
       <div ref={ref} className={className}>
         {children}

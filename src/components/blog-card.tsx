@@ -1,12 +1,20 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-function BlogImage({ src, alt }: { src: string; alt: string }) {
+function BlogImage({
+  src,
+  alt,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  priority?: boolean;
+}) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
@@ -14,9 +22,13 @@ function BlogImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={400}
+      height={192}
+      sizes="(max-width: 640px) 100vw, 50vw"
+      priority={priority}
       className="w-full h-48 object-cover"
       onError={() => setImageError(true)}
     />
@@ -30,6 +42,7 @@ interface Props {
   dates: string;
   image?: string;
   className?: string;
+  priority?: boolean;
 }
 
 export function BlogCard({
@@ -39,6 +52,7 @@ export function BlogCard({
   dates,
   image,
   className,
+  priority = false,
 }: Props) {
   return (
     <Link
@@ -50,7 +64,7 @@ export function BlogCard({
     >
       <div className="relative shrink-0">
         {image ? (
-          <BlogImage src={image} alt={title} />
+          <BlogImage src={image} alt={title} priority={priority} />
         ) : (
           <div className="w-full h-48 bg-muted" />
         )}

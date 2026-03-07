@@ -1,14 +1,22 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
 
-function ProjectImage({ src, alt }: { src: string; alt: string }) {
+function ProjectImage({
+  src,
+  alt,
+  priority,
+}: {
+  src: string;
+  alt: string;
+  priority?: boolean;
+}) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
@@ -16,9 +24,13 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   }
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={400}
+      height={192}
+      sizes="(max-width: 640px) 100vw, 50vw"
+      priority={priority}
       className="w-full h-48 object-cover"
       onError={() => setImageError(true)}
     />
@@ -34,6 +46,7 @@ interface Props {
   link?: string;
   image?: string;
   video?: string;
+  priority?: boolean;
   links?: readonly {
     icon: React.ReactNode;
     type: string;
@@ -53,6 +66,7 @@ export function ProjectCard({
   video,
   links,
   className,
+  priority = false,
 }: Props) {
   return (
     <div
@@ -78,7 +92,7 @@ export function ProjectCard({
               className="w-full h-48 object-cover"
             />
           ) : image ? (
-            <ProjectImage src={image} alt={title} />
+            <ProjectImage src={image} alt={title} priority={priority} />
           ) : (
             <div className="w-full h-48 bg-muted" />
           )}
