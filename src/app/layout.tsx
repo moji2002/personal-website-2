@@ -1,4 +1,4 @@
-import Navbar from "@/components/navbar";
+import dynamic from "next/dynamic";
 import { ReduceMotionProvider } from "@/components/reduce-motion-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { FlickeringGridWrapper } from "@/components/flickering-grid-wrapper";
 import "./globals.css";
+
+const Navbar = dynamic(() => import("@/components/navbar"));
 
 const geist = Geist({
   subsets: ["latin"],

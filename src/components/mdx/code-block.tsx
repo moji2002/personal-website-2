@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, type ComponentProps } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
-import { codeToHtml } from "shiki/bundle/web";
+import { highlightCode } from "@/lib/shiki-highlighter";
 import { cn } from "@/lib/utils";
 
 type CodeBlockProps = ComponentProps<"pre">;
@@ -33,19 +33,10 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     const nextTitle = codeEl.getAttribute("data-title");
     const nextClassName = codeEl.className || "";
 
-    void codeToHtml(codeText, {
-      lang: lang as any,
-      themes: {
-        light: "github-light",
-        dark: "github-dark",
-      },
-      defaultColor: false,
-    })
+    void highlightCode(codeText, lang)
       .then((html) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
         setRenderState({
-          html: doc.querySelector("code")?.innerHTML ?? "",
+          html,
           className: nextClassName,
           title: nextTitle,
         });

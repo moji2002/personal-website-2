@@ -1,6 +1,11 @@
-import { CodeBlock } from "@/components/mdx/code-block";
+import dynamic from "next/dynamic";
 import { MediaContainer } from "@/components/mdx/media-container";
 import type { ComponentProps } from "react";
+
+const CodeBlock = dynamic(
+  () => import("@/components/mdx/code-block").then((m) => m.CodeBlock),
+  { ssr: true }
+);
 
 type CodeProps = ComponentProps<"code"> & {
   "data-language"?: string;
