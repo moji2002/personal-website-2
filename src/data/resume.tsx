@@ -1,41 +1,34 @@
 import React from "react";
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { HomeIcon, NotebookIcon, Code2 } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
 import { Typescript } from "@/components/ui/svgs/typescript";
 import { Nodejs } from "@/components/ui/svgs/nodejs";
-import { Python } from "@/components/ui/svgs/python";
-import { Golang } from "@/components/ui/svgs/golang";
-import { Postgresql } from "@/components/ui/svgs/postgresql";
-import { Docker } from "@/components/ui/svgs/docker";
-import { Kubernetes } from "@/components/ui/svgs/kubernetes";
-import { Java } from "@/components/ui/svgs/java";
-import { Csharp } from "@/components/ui/svgs/csharp";
 
 export const DATA = {
   name: "Mojtaba Beheshti",
   initials: "MB",
   url: "https://this.is-a.dev",
-  location: "Alanya, Turkey",
-  locationLink: "https://www.google.com/maps/place/alanya+turkey",
+  location: "North Cyprus",
+  locationLink: "https://www.google.com/maps/place/north+cyprus",
   description:
-    "Senior Full-Stack Developer with 5+ years of experience in scalable web development, specializing in JavaScript (React, Node.js, TypeScript), cloud services, REST APIs, and efficient modern architectures.",
+    "Senior Front-End Engineer with 5+ years of experience focusing on React and Next.js applications. I specialize in building, testing, and maintaining large-scale web systems.",
   summary:
-    "Senior Full-Stack Developer with 5+ years of experience in scalable web development, specializing in JavaScript (React, Node.js, TypeScript), cloud services, REST APIs, and efficient modern architectures. Demonstrated impact in fintech, AI, blockchain, and e-commerce, delivering over 15 cross-functional projects focused on security, rapid delivery, and measurable performance improvements. Adept leader with a passion for code quality and technical mentorship.",
+    "Front-End Engineer with 5+ years of experience focusing on React and Next.js applications. I specialize in building, testing, and maintaining large-scale web systems. My work involves migrating legacy projects to modern frameworks, leading small teams to improve engineering processes, and ensuring application stability through strict type-safety and performance optimizations. I am comfortable working in remote environments and possess a background in full-stack integration and real-time data handling.",
   avatarUrl: "/me.png",
   skills: [
     { name: "React", icon: ReactLight },
     { name: "Next.js", icon: NextjsIconDark },
-    { name: "Typescript", icon: Typescript },
+    { name: "TypeScript", icon: Typescript },
+    { name: "Tailwind CSS", icon: Icons.tailwindcss },
     { name: "Node.js", icon: Nodejs },
-    { name: "Python", icon: Python },
-    { name: "Go", icon: Golang },
-    { name: "Postgres", icon: Postgresql },
-    { name: "Docker", icon: Docker },
-    { name: "Kubernetes", icon: Kubernetes },
-    { name: "Java", icon: Java },
-    { name: "C++", icon: Csharp },
+    { name: "TanStack Query", icon: Code2 },
+    { name: "Zod", icon: Code2 },
+    { name: "Vitest", icon: Code2 },
+    { name: "Playwright", icon: Code2 },
+    { name: "Web3.js", icon: Code2 },
+    { name: "GraphQL", icon: Code2 },
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -43,7 +36,7 @@ export const DATA = {
   ],
   contact: {
     email: "moji2002@gmail.com",
-    tel: "+98 XXX XXX XXXX", // placeholder
+    tel: "+90 533 851 9791",
     social: {
       GitHub: {
         name: "GitHub",
@@ -55,6 +48,12 @@ export const DATA = {
         name: "LinkedIn",
         url: "https://linkedin.com/in/mojtaba-beheshti",
         icon: Icons.linkedin,
+        navbar: true,
+      },
+      Portfolio: {
+        name: "Portfolio",
+        url: "https://this.is-a.dev",
+        icon: Icons.globe,
         navbar: true,
       },
       email: {
@@ -69,125 +68,132 @@ export const DATA = {
   work: [
     {
       company: "Ayande Nevisan",
-      href: "#", // placeholder
+      href: "#",
       badges: [],
       location: "Remote",
-      title: "Senior Full-Stack Developer",
-      logoUrl: "", // placeholder
+      title: "Senior Front-End Engineer",
+      logoUrl: "",
       start: "Aug 2023",
       end: "Present",
-      description:
-        "Developed a highly scalable order matching system using RabbitMQ, supporting 1M+ daily trading requests. Built and launched 3 PWA products (Next.js 14, TypeScript, i18next), expanding market to 4 languages, including RTL support, in 30 days. Led Agile team of 3 developers; improved overall productivity by 20% via mentorship and technical reviews. Standardized TypeScript adoption, reducing type-related bugs by 90%. Migrated 5 legacy PHP apps to React stack, achieving 30% faster page loads and improved maintainability. Integrated NextAuth.js for OAuth (Google, GitHub); deployed real-time trading modules with WebSocket and Socket.io. Supported technical recruitment and onboarding of 12+ engineers.",
+      highlights: [
+        "Architected and deployed production-grade Progressive Web Applications (PWAs) using Next.js, prioritizing offline-first functionality and mobile responsiveness.",
+        "Directed a front-end engineering team of three, implementing rigorous code review protocols and architectural standards that increased team velocity.",
+        "Engineered a contract-first API integration layer using Zodios, ensuring end-to-end type safety and reducing production runtime errors by approximately 90%.",
+        "Spearheaded the migration of legacy PHP applications to a React-based architecture, achieving a 35% improvement in Core Web Vitals.",
+        "Developed real-time monitoring dashboards utilizing WebSockets to provide low-latency data visualization for internal operational tools.",
+      ],
     },
     {
       company: "Arad Dasht",
-      href: "#", // placeholder
+      href: "#",
       badges: [],
       location: "Remote",
-      title: "Frontend Developer",
-      logoUrl: "", // placeholder
+      title: "Front-End Developer",
+      logoUrl: "",
       start: "Sep 2022",
       end: "Aug 2023",
-      description:
-        "Mentored 5 junior developers in React/TypeScript, raising overall code quality and review effectiveness. Built interactive store locator with dynamic API integration (React, OpenStreetMaps). Enhanced frontend stability by 20% through advanced debugging and refactoring. Developed logo-attachment feature for user-driven product customization.",
+      highlights: [
+        "Mentored five junior developers, establishing a structured onboarding curriculum that reduced average ramp-up time by 50%.",
+        "Developed a localized store-discovery engine utilizing geolocation APIs and advanced map filtering, directly improving user conversion rates.",
+        "Designed an automated image processing utility for dynamic branding application, significantly reducing manual design overhead.",
+        "Collaborated with cross-functional teams to refine API specifications, resulting in a 30% reduction in integration-related deployment delays.",
+      ],
     },
     {
       company: "Kimiagaran",
-      href: "#", // placeholder
+      href: "#",
       badges: [],
       location: "Remote",
-      title: "Frontend Developer",
-      logoUrl: "", // placeholder
+      title: "Front-End Developer",
+      logoUrl: "",
       start: "Sep 2020",
       end: "Sep 2022",
-      description:
-        "Engineered real-time data services (Node.js, WebSocket) for 100+ crypto and stock assets, boosting research capacity 50%. Led migration from WordPress to Next.js, increasing customer engagement by 8%. Built secure cryptocurrency wallet app (React, Web3, cryptography) in 30 days. Advanced Core Web Vitals 40% by optimizing code splitting, lazy loading, and image delivery.",
+      highlights: [
+        "Optimized application performance via advanced code-splitting and asset-loading, yielding a 40% improvement in Time to Interactive (TTI).",
+        "Built a Web3-integrated cryptocurrency wallet within a high-pressure 30-day cycle, focusing on secure transaction signing.",
+        "Integrated Next.js solutions with headless WordPress via REST APIs, increasing organic user engagement by 25%.",
+        "Developed Node.js microservices to handle real-time synchronization of financial market data for the frontend.",
+      ],
     },
   ],
   education: [
     {
-      school: "Self-Taught Web Developer",
-      href: "#", // placeholder
-      degree: "Independent Learning",
-      logoUrl: "", // placeholder
-      start: "", // placeholder
-      end: "", // placeholder
+      school: "Meta",
+      href: "https://www.coursera.org/professional-certificates/meta-front-end-developer",
+      degree: "Meta Front-End Developer Professional Certificate (via Coursera)",
+      logoUrl: "",
+      start: "",
+      end: "",
     },
     {
-      school: "Meta",
-      href: "https://www.meta.com",
-      degree: "Meta Advanced React and JavaScript Certificate",
-      logoUrl: "", // placeholder
-      start: "2023",
-      end: "2023",
+      school: "Independent / Professional Study",
+      href: "#",
+      degree: "Advanced Software Engineering Immersive — Focus on Distributed Systems, React Architecture, and Performance Optimization",
+      logoUrl: "",
+      start: "",
+      end: "",
     },
   ],
   projects: [
     {
-      title: "Crypto Exchange Platform",
-      href: "#", // placeholder
-      dates: "", // placeholder
+      title: "Production PWA Suite",
+      href: "#",
+      dates: "",
       active: true,
       description:
-        "Scalable order matching system using RabbitMQ and WebSocket. Reduced latency for high-volume transactions, supporting 1M+ daily trading requests.",
-      technologies: [
-        "Next.js",
-        "TypeScript",
-        "RabbitMQ",
-        "WebSocket",
-        "Node.js",
-      ],
+        "Architected and deployed production-grade PWAs using Next.js with offline-first functionality and mobile responsiveness.",
+      technologies: ["Next.js", "TypeScript", "PWA"],
       links: [],
-      image: "", // placeholder
-      video: "", // placeholder
+      image: "",
+      video: "",
     },
     {
-      title: "Multi-language PWA Suite",
-      href: "#", // placeholder
-      dates: "", // placeholder
+      title: "Zodios API Integration Layer",
+      href: "#",
+      dates: "",
       active: true,
       description:
-        "Delivered 3 mobile-first products in 1 month. Enabled 4-language support including RTL localization using Next.js 14, TypeScript, and i18next.",
-      technologies: ["Next.js", "TypeScript", "i18next", "PWA"],
+        "Engineered contract-first API integration ensuring end-to-end type safety, reducing production runtime errors by approximately 90%.",
+      technologies: ["Zodios", "Zod", "TypeScript"],
       links: [],
-      image: "", // placeholder
-      video: "", // placeholder
+      image: "",
+      video: "",
     },
     {
-      title: "Legacy System Migration",
-      href: "#", // placeholder
-      dates: "", // placeholder
+      title: "Legacy PHP to React Migration",
+      href: "#",
+      dates: "",
       active: true,
       description:
-        "Modernized 5 PHP projects to React & TypeScript, improving UI/UX and maintainability. Achieved 30% faster page loads.",
+        "Spearheaded migration of legacy PHP applications to React-based architecture, achieving 35% improvement in Core Web Vitals.",
       technologies: ["React", "TypeScript", "Next.js"],
       links: [],
-      image: "", // placeholder
-      video: "", // placeholder
+      image: "",
+      video: "",
     },
     {
-      title: "Cryptocurrency Wallet",
-      href: "#", // placeholder
-      dates: "", // placeholder
+      title: "Web3 Cryptocurrency Wallet",
+      href: "#",
+      dates: "",
       active: true,
       description:
-        "Developed robust wallet application using React, Node.js, and Web3. Cut app startup time by 20% through optimization.",
-      technologies: ["React", "Node.js", "Web3", "Cryptography"],
+        "Built Web3-integrated cryptocurrency wallet in 30 days, focusing on secure transaction signing.",
+      technologies: ["React", "Web3.js", "Cryptography"],
       links: [],
-      image: "", // placeholder
-      video: "", // placeholder
+      image: "",
+      video: "",
     },
     {
-      title: "WordPress to Next.js Redesign",
-      href: "#", // placeholder
-      dates: "", // placeholder
+      title: "Store Discovery Engine",
+      href: "#",
+      dates: "",
       active: true,
       description:
-        "Led migration from WordPress to Next.js, increasing engagement by 8%, Time-on-Site by 25%, and Web Vitals by 40%.",
-      technologies: ["Next.js", "React", "TypeScript"],
+        "Developed localized store-discovery engine with geolocation APIs and advanced map filtering, improving user conversion rates.",
+      technologies: ["React", "Geolocation APIs", "TypeScript"],
       links: [],
-      image: "", // placeholder
-      video: "", // placeholder
+      image: "",
+      video: "",
     },
   ],
   hackathons: [] as Array<{
