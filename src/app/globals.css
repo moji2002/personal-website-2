@@ -120,6 +120,15 @@
     @apply bg-background text-foreground;
   }
 
+  /* Disable animations for crawlers (Google bot, Lighthouse/PageSpeed) to improve Core Web Vitals */
+  [data-reduce-motion="true"] *,
+  [data-reduce-motion="true"] *::before,
+  [data-reduce-motion="true"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
   /* Shiki dual theme support */
   .shiki,
   .shiki span {

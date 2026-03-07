@@ -41,7 +41,6 @@ export default function Page() {
                 className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl"
                 delay={BLUR_FADE_DELAY}
                 text={DATA.description}
-                
               />
             </div>
             <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">

@@ -28,11 +28,6 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   ...props
 }) => {
   const reduceMotion = useReduceMotion()
-
-  if (reduceMotion) {
-    return null
-  }
-
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isInView, setIsInView] = useState(false)
@@ -227,6 +222,10 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
       intersectionObserver.disconnect()
     }
   }, [setupCanvas, updateSquares, drawGrid, width, height, isInView])
+
+  if (reduceMotion) {
+    return null
+  }
 
   return (
     <div

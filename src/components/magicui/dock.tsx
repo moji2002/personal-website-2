@@ -1,5 +1,6 @@
 "use client";
 
+import { useReduceMotion } from "@/components/reduce-motion-provider";
 import { cn } from "@/lib/utils";
 import { motion, type MotionValue, useMotionValue, useSpring, useTransform } from "motion/react";
 import { createContext, useContext, useRef, type ReactNode } from "react";
@@ -32,7 +33,18 @@ interface DockContextValue {
 const DockContext = createContext<DockContextValue | null>(null);
 
 const Dock = ({ className, children, magnification = DEFAULT_MAGNIFICATION, distance = DEFAULT_DISTANCE }: DockProps) => {
+  const reduceMotion = useReduceMotion();
   const mouseX = useMotionValue(Infinity);
+
+  if (reduceMotion) {
+    return (
+      <div
+        className={cn("mx-auto w-max h-full flex items-end justify-center overflow-visible rounded-full border", className)}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <DockContext.Provider value={{ mouseX, magnification, distance }}>
@@ -47,15 +59,14 @@ const Dock = ({ className, children, magnification = DEFAULT_MAGNIFICATION, dist
   );
 };
 
-const DockIcon = ({ className, children }: DockIconProps) => {
+const AnimatedDockIcon = ({
+  className,
+  children,
+  mouseX,
+  magnification,
+  distance,
+}: DockIconProps & { mouseX: MotionValue<number>; magnification: number; distance: number }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const context = useContext(DockContext);
-
-  if (!context) {
-    throw new Error("DockIcon must be used within a Dock component");
-  }
-
-  const { mouseX, magnification, distance } = context;
 
   const distanceCalc = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -84,6 +95,38 @@ const DockIcon = ({ className, children }: DockIconProps) => {
         {children}
       </motion.div>
     </motion.div>
+  );
+};
+
+const DockIcon = ({ className, children }: DockIconProps) => {
+  const reduceMotion = useReduceMotion();
+  const context = useContext(DockContext);
+
+  if (reduceMotion || !context) {
+    return (
+      <div
+        style={{ width: BASE_SIZE, height: BASE_SIZE }}
+        className={cn("relative flex aspect-square items-center justify-center rounded-full shrink-0", className)}
+      >
+        <div
+          style={{ width: BASE_ICON_SIZE, height: BASE_ICON_SIZE }}
+          className="flex items-center justify-center"
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <AnimatedDockIcon
+      className={className}
+      mouseX={context.mouseX}
+      magnification={context.magnification}
+      distance={context.distance}
+    >
+      {children}
+    </AnimatedDockIcon>
   );
 };
 
