@@ -147,8 +147,7 @@ export const DATA = {
           icon: <Icons.github className="size-4" />,
         },
       ],
-      image:
-        "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&h=192&fit=crop",
+      image: "/blog-purifai.png",
       video: "",
     },
   ],

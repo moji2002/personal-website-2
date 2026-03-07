@@ -1,0 +1,269 @@
+---
+title: "Introducing Purifai: Security, Benchmarks, and Why It Blocks 100% of XSS"
+publishedAt: "2025-03-08"
+updatedAt: "2025-03-08"
+author: "Mojtaba Beheshti"
+summary: "Purifai is an ultra-secure, zero-dependency HTML sanitizer that achieves 100% success against 64 attack vectors—including polyglots that bypass DOMPurify and sanitize-html. Here's the full story: what it does, why others fail, and how to migrate."
+image: "/blog-purifai.png"
+---
+
+# Introducing Purifai: Security, Benchmarks, and Why It Blocks 100% of XSS
+
+Cross-site scripting (XSS) is still one of the top risks on the [OWASP Top 10](https://owasp.org/www-project-top-ten/). Every time you render user-generated content—comments, rich text, profile bios—you're opening a door. The standard fix is sanitization: strip or escape dangerous HTML before it hits the DOM. But here's the catch: many popular sanitizers fail on advanced attack vectors. Polyglot payloads, encoding bypasses, and namespace confusion techniques slip through DOMPurify and sanitize-html. I built [Purifai](https://github.com/moji2002/purifai) to fix that.
+
+Purifai is an ultra-secure, zero-dependency HTML sanitizer that achieved a **100% success rate** against 64 sophisticated attack vectors in testing—the only library to block every single one. It's TypeScript-native, ~12KB, and designed for both Node.js and the browser.
+
+<MediaContainer
+  src="/blog-purifai.png"
+  alt="Purifai - Ultra-secure HTML sanitizer"
+/>
+
+## Quick Start
+
+Install it:
+
+```bash
+npm install purifai
+# or
+pnpm add purifai
+```
+
+Use it:
+
+```typescript
+import { Purifai } from 'purifai';
+
+// Simple sanitization
+const clean = Purifai.sanitize('<script>alert("xss")</script>Hello World');
+console.log(clean); // "Hello World"
+
+// With options for stricter control
+const safe = Purifai.sanitize(userInput, {
+  maxLength: 10000,
+  allowBasicHtml: false,
+  aggressiveMode: true
+});
+```
+
+That's it. No DOM, no external dependencies. Just a function that takes dirty HTML and returns safe output.
+
+## Why It Matters: The Benchmark
+
+In testing against 64 attack vectors from OWASP, PortSwigger, and security research:
+
+| Library | Success Rate | Blocked | Failed |
+|---------|-------------|---------|--------|
+| **Purifai** | **100.0%** | **64/64** | **0** |
+| sanitize-html | 79.7% | 51/64 | 13 |
+| DOMPurify | 62.5% | 40/64 | 24 |
+| node-sanitize | 56.3% | 36/64 | 28 |
+| xss | 20.3% | 13/64 | 51 |
+| validator.js | 7.8% | 5/64 | 59 |
+
+By attack category:
+
+| Attack Category | Purifai | sanitize-html | DOMPurify |
+|-----------------|---------|---------------|-----------|
+| Basic XSS | 100% | 95% | 90% |
+| Polyglot Attacks | 100% | 33% | 0% |
+| Encoding Bypasses | 100% | 25% | 0% |
+| Template Injection | 100% | 20% | 20% |
+| Protocol Injection | 100% | 0% | 0% |
+
+Purifai is the only one that blocks everything. The failures in other libraries aren't edge cases—they're polyglot payloads and encoding bypasses that attackers use in the wild.
+
+## Why Popular Sanitizers Fail
+
+DOMPurify and sanitize-html are battle-tested and block a lot of XSS. But they're not perfect. Understanding why helps explain what Purifai does differently.
+
+### Polyglot Attacks
+
+A polyglot payload is a string that is valid in multiple contexts at once—HTML, JavaScript, SVG, URL—all at the same time. Sanitizers often parse input in one context and miss the fact that the same string, when interpreted elsewhere, executes code.
+
+Example: the "universal XSS polyglot" can trigger XSS in many different HTML contexts. It exploits how browsers parse overlapping tags and context switches:
+
+```javascript
+// This payload bypasses many sanitizers—Purifai blocks it
+jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcliCk=alert() )//%0D%0A%0d%0a//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3csVg/<sVg/oNloAd=alert()///>\\x3e
+```
+
+It looks like gibberish. But browsers parse it in ways that allow `alert()` to run. DOMPurify and sanitize-html let some variants through because their parsing model doesn't account for every context switch.
+
+### Namespace Confusion and Encoding Bypasses
+
+**Namespace confusion** exploits HTML5's multiple namespaces (HTML, SVG, MathML). Attackers nest elements so a sanitizer thinks a tag is closed when it isn't:
+
+```html
+<form><math><mtext></form><form><mglyph><style></math><img src onerror=alert(1)>
+```
+
+**Encoding bypasses** use HTML entities, URL encoding, or Unicode escapes to hide malicious content:
+
+- `&#60;script&#62;alert(1)&#60;/script&#62;` — HTML entities
+- `%3Cscript%3Ealert(1)%3C/script%3E` — URL encoded
+- `\u003cscript\u003ealert(1)\u003c/script\u003e` — Unicode escapes
+
+A sanitizer that only looks for literal `<script>` will miss these.
+
+## How Purifai Approaches the Problem
+
+Purifai uses multi-layer sanitization and context-aware parsing. Instead of relying on a single pass or DOM-based parsing (which can be inconsistent across environments), it:
+
+1. **Normalizes encodings first** — Decodes HTML entities, URL encoding, and Unicode escapes before applying rules.
+2. **Handles context switches** — Tracks when the parser moves between HTML, SVG, script, and style contexts.
+3. **Blocks protocol injection** — `javascript:`, `vbscript:`, `data:` URIs are stripped from attributes.
+4. **Offers aggressive mode** — `aggressiveMode: true` (default) applies stricter rules and fallback checks.
+
+`aggressiveMode` is the right choice for user-generated content, chat systems, CMS content, or anywhere you can't fully trust the input. Turn it off only if you have a controlled input source and need to preserve more HTML structure.
+
+## Key Features
+
+**Zero dependencies.** No DOM, no jsdom, no cheerio. Minimal bundle size (~12KB) and a tiny attack surface. Works in Node and the browser.
+
+**Threat analysis.** Use `analyze()` when you need more than sanitization—logging, blocking, or incident response:
+
+```typescript
+import { analyze } from 'purifai';
+
+const result = analyze('<script>alert("hack")</script>User content');
+console.log(result.content);     // "User content"
+console.log(result.hadThreats);  // true
+console.log(result.threatLevel); // "critical"
+
+if (result.hadThreats) {
+  console.warn('Potential XSS detected', { level: result.threatLevel });
+}
+broadcast(result.content); // Safe to use
+```
+
+**Batch processing.** Sanitize multiple strings at once for APIs or content pipelines:
+
+```typescript
+import { sanitizeBatch } from 'purifai';
+
+const cleanData = sanitizeBatch([
+  '<script>alert(1)</script>Hello',
+  '<img src=x onerror=alert(1)>World',
+  'Safe content'
+]);
+// ["Hello", "World", "Safe content"]
+```
+
+**Danger check.** Quick pre-scan with `isDangerous()` for logging or blocking before full sanitization.
+
+## Migrating from DOMPurify or sanitize-html
+
+Purifai is a drop-in replacement in most cases. The API is similar, the options map cleanly, and migration usually takes minutes.
+
+### When Migration Makes Sense
+
+- **Security-critical apps** — Banking, healthcare, admin panels
+- **Polyglot concerns** — You've seen or heard of bypasses against your current sanitizer
+- **Zero-dependency needs** — Smaller bundle, no DOM/jsdom
+- **TypeScript-native** — Built for TypeScript from the ground up
+
+### From DOMPurify
+
+**Before:**
+
+```typescript
+import DOMPurify from 'dompurify';
+const clean = DOMPurify.sanitize(dirty);
+```
+
+**After:**
+
+```typescript
+import { sanitize } from 'purifai';
+const clean = sanitize(dirty);
+```
+
+If you were using DOMPurify in Node with jsdom, you no longer need jsdom—Purifai doesn't use the DOM.
+
+### From sanitize-html
+
+**Before:**
+
+```typescript
+import sanitizeHtml from 'sanitize-html';
+const clean = sanitizeHtml(dirty, {
+  allowedTags: ['b', 'i', 'em', 'strong', 'p'],
+  allowedAttributes: { a: ['href'] },
+});
+```
+
+**After:**
+
+```typescript
+import { sanitize } from 'purifai';
+const clean = sanitize(dirty, {
+  allowBasicHtml: true,
+  maxLength: 50000,
+  allowedProtocols: ['http', 'https', 'mailto'],
+  aggressiveMode: true
+});
+```
+
+`allowBasicHtml: true` enables a curated set of safe inline tags. For "strip everything," use `allowBasicHtml: false` (default).
+
+### Edge Cases
+
+**Custom protocols.** Purifai defaults to `http`, `https`, and `mailto`. For others (e.g. `tel:`):
+
+```typescript
+sanitize(dirty, { allowedProtocols: ['http', 'https', 'mailto', 'tel'] });
+```
+
+**Max length.** Cap input size to avoid DoS:
+
+```typescript
+sanitize(dirty, { maxLength: 10000 });
+```
+
+**Batch processing.** For many strings (e.g. API request bodies):
+
+```typescript
+import { sanitizeBatch } from 'purifai';
+const cleanData = sanitizeBatch(Object.values(request.body));
+```
+
+### Testing Strategy
+
+Don't switch cold. Run both sanitizers in parallel during rollout:
+
+1. Install Purifai alongside your current library.
+2. Add a comparison layer in development or staging:
+
+```typescript
+import { sanitize as purifaiSanitize } from 'purifai';
+import DOMPurify from 'dompurify';
+
+function sanitizeWithComparison(input: string) {
+  const purifaiResult = purifaiSanitize(input);
+  const dompurifyResult = DOMPurify.sanitize(input);
+  if (purifaiResult !== dompurifyResult) {
+    console.warn('Sanitizer output differs', { input, purifaiResult, dompurifyResult });
+  }
+  return purifaiResult;
+}
+```
+
+3. Log differences—Purifai may strip more. That's expected and usually desirable.
+4. Run your test suite. Fix any legitimate content that gets over-stripped.
+5. Deploy, then remove the old library and comparison code.
+
+### Quick Checklist
+
+- [ ] Install: `pnpm add purifai`
+- [ ] Replace imports: `sanitize` from `purifai`
+- [ ] Map options: `allowBasicHtml`, `maxLength`, `allowedProtocols` as needed
+- [ ] Remove jsdom (if you only had it for DOMPurify)
+- [ ] Run both sanitizers in parallel in staging
+- [ ] Run tests, fix any over-stripping
+- [ ] Deploy and remove old dependency
+
+## Wrap-up
+
+Popular sanitizers block a lot—but not everything. Polyglot attacks, encoding bypasses, and namespace confusion exploit the gap between "good enough" and "bulletproof." Purifai was built to close that gap. If you're handling untrusted HTML, it's worth testing your current sanitizer against the same vectors. You might be surprised what gets through.
+
+Purifai is [on npm](https://www.npmjs.com/package/purifai) and [open source on GitHub](https://github.com/moji2002/purifai). Run the benchmarks yourself—`pnpm benchmark` in the repo compares against DOMPurify, sanitize-html, and others. If you hit edge cases, the [README](https://github.com/moji2002/purifai) and [GitHub issues](https://github.com/moji2002/purifai/issues) are good places to look.
