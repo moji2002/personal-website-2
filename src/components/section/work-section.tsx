@@ -27,7 +27,7 @@ function LogoImage({ src, alt }: { src: string; alt: string }) {
   if (!src || imageError) {
     const initials = getInitials(alt);
     return (
-      <div className="size-8 md:size-10 flex items-center justify-center border rounded-full shadow ring-2 ring-border bg-muted flex-none text-xs font-semibold text-muted-foreground">
+      <div className="size-8 md:size-10 flex items-center justify-center border rounded-full shadow ring-2 ring-border bg-muted flex-none text-xs font-semibold text-foreground">
         {initials}
       </div>
     );

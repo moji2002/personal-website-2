@@ -15,6 +15,7 @@ export function ModeToggle({ className }: { className?: string }) {
       size="icon"
       className={cn(className)}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Toggle theme"
     >
       <SunIcon className="h-full w-full" />
       <MoonIcon className="hidden h-full w-full" />

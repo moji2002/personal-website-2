@@ -106,6 +106,8 @@ export function ProjectCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center justify-center min-h-11 min-w-11 px-3 py-2 rounded-md"
+                aria-label={`Open ${link.type}`}
               >
                 <Badge
                   className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
