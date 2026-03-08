@@ -19,7 +19,7 @@ export function ModeToggle({ className }: { className?: string }) {
     >
 
       {theme === "dark" ? (
-        <SunIcon className=" h-full w-full" />
+        <SunIcon className="h-full w-full" />
       ) : (
         <MoonIcon className="h-full w-full" />
       )}
