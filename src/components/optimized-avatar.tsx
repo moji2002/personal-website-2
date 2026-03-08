@@ -9,6 +9,8 @@ interface OptimizedAvatarProps {
   alt: string;
   fallback: string;
   className?: string;
+  /** Prioritize loading for LCP (above-the-fold hero image) */
+  priority?: boolean;
 }
 
 export function OptimizedAvatar({
@@ -16,6 +18,7 @@ export function OptimizedAvatar({
   alt,
   fallback,
   className,
+  priority = false,
 }: OptimizedAvatarProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -41,6 +44,7 @@ export function OptimizedAvatar({
       sizes="(max-width: 768px) 96px, 128px"
       className={cn("aspect-square h-full w-full object-cover", className)}
       onError={() => setImageError(true)}
+      priority={priority}
     />
   );
 }

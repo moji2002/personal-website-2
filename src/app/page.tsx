@@ -65,6 +65,7 @@ export default function Page() {
                   src={DATA.avatarUrl}
                   alt={DATA.name}
                   fallback={DATA.initials}
+                  priority
                 />
               </div>
             </BlurFade>

@@ -17,7 +17,6 @@ interface BlurFadeTextProps {
   delay?: number;
   yOffset?: number;
   animateByCharacter?: boolean;
-  /** When true, text paints immediately for LCP. No animation delay. */
 }
 const BlurFadeText = ({
   text,
@@ -37,7 +36,7 @@ const BlurFadeText = ({
   const combinedVariants = variant || defaultVariants;
   const characters = useMemo(() => Array.from(text), [text]);
 
-  if (reduceMotion ) {
+  if (reduceMotion) {
     return (
       <span className={cn("inline-block", className)}>{text}</span>
     );
