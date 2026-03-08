@@ -37,8 +37,9 @@ function LogoImage({ src, alt }: { src: string; alt: string }) {
     <Image
       src={src}
       alt={alt}
-      width={40}
-      height={40}
+      width={80}
+      height={80}
+      sizes="(max-width: 768px) 32px, 40px"
       className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border overflow-hidden object-contain flex-none"
       onError={() => setImageError(true)}
     />

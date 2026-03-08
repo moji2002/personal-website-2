@@ -4,6 +4,8 @@ import { withContentCollections } from "@content-collections/next";
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
+    // Inline CSS to eliminate render-blocking request, improving FCP/LCP
+    inlineCss: true,
     optimizePackageImports: [
       "lucide-react",
       "@radix-ui/react-accordion",
@@ -48,6 +50,20 @@ const nextConfig = {
         ],
       },
     ];
+  },
+  turbopack: {
+    resolveAlias: {
+      "../build/polyfills/polyfill-module": "./src/lib/modern-polyfill.js",
+      "next/dist/build/polyfills/polyfill-module": "./src/lib/modern-polyfill.js",
+    },
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "../build/polyfills/polyfill-module": false,
+      "next/dist/build/polyfills/polyfill-module": false,
+    };
+    return config;
   },
 };
 
