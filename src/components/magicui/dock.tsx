@@ -2,7 +2,7 @@
 
 import { useReduceMotion } from "@/components/reduce-motion-provider";
 import { cn } from "@/lib/utils";
-import { motion, type MotionValue, useMotionValue, useSpring, useTransform } from "motion/react";
+import { animate, motion, type MotionValue, useMotionValue, useSpring, useTransform } from "motion/react";
 import { createContext, useContext, useRef, type ReactNode } from "react";
 
 interface DockProps {
@@ -22,7 +22,9 @@ const DEFAULT_DISTANCE = 100;
 const BASE_SIZE = 40;
 const BASE_ICON_SIZE = 20;
 const ICON_SIZE_RATIO = 0.5;
-const SPRING = { mass: 0.1, stiffness: 150, damping: 12 };
+const LIFT_PX = 6;
+/** Slightly bouncier spring for playful macOS-like feel */
+const SPRING = { mass: 0.1, stiffness: 180, damping: 10 };
 
 interface DockContextValue {
   mouseX: MotionValue<number>;
@@ -49,7 +51,7 @@ const Dock = ({ className, children, magnification = DEFAULT_MAGNIFICATION, dist
   return (
     <DockContext.Provider value={{ mouseX, magnification, distance }}>
       <motion.div
-        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseMove={(e) => mouseX.set(e.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
         className={cn("mx-auto w-max h-full flex items-end justify-center overflow-visible rounded-full border", className)}
       >
@@ -59,6 +61,14 @@ const Dock = ({ className, children, magnification = DEFAULT_MAGNIFICATION, dist
   );
 };
 
+/** Softer falloff: squared curve so 2–3 icons scale together (macOS-like wave) */
+function scaleFromDistance(d: number, distance: number, min: number, max: number) {
+  const absD = Math.abs(d);
+  if (absD >= distance) return min;
+  const t = 1 - (absD / distance) ** 2;
+  return min + (max - min) * t;
+}
+
 const AnimatedDockIcon = ({
   className,
   children,
@@ -67,6 +77,7 @@ const AnimatedDockIcon = ({
   distance,
 }: DockIconProps & { mouseX: MotionValue<number>; magnification: number; distance: number }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const bounceScale = useMotionValue(1);
 
   const distanceCalc = useTransform(mouseX, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
@@ -74,18 +85,39 @@ const AnimatedDockIcon = ({
   });
 
   const containerSize = useSpring(
-    useTransform(distanceCalc, [-distance, 0, distance], [BASE_SIZE, magnification, BASE_SIZE]),
+    useTransform(distanceCalc, (d) => scaleFromDistance(d, distance, BASE_SIZE, magnification)),
     SPRING
   );
   const iconSize = useSpring(
-    useTransform(distanceCalc, [-distance, 0, distance], [BASE_ICON_SIZE, magnification * ICON_SIZE_RATIO, BASE_ICON_SIZE]),
+    useTransform(distanceCalc, (d) =>
+      scaleFromDistance(d, distance, BASE_ICON_SIZE, magnification * ICON_SIZE_RATIO)
+    ),
     SPRING
   );
+  const translateY = useSpring(
+    useTransform(distanceCalc, (d) => {
+      const absD = Math.abs(d);
+      if (absD >= distance) return 0;
+      const t = 1 - (absD / distance) ** 2;
+      return -LIFT_PX * t;
+    }),
+    SPRING
+  );
+
+  const handlePointerDown = () => {
+    animate(bounceScale, [1, 1.15, 1], { duration: 0.25 });
+  };
 
   return (
     <motion.div
       ref={ref}
-      style={{ width: containerSize, height: containerSize }}
+      onPointerDown={handlePointerDown}
+      style={{
+        width: containerSize,
+        height: containerSize,
+        y: translateY,
+        scale: bounceScale,
+      }}
       className={cn("relative flex aspect-square items-center justify-center rounded-full shrink-0", className)}
     >
       <motion.div
