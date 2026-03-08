@@ -65,8 +65,6 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Senior Front-End Engineer",
-      logoUrl:
-        "https://ui-avatars.com/api/?name=Ayande+Nevisan&size=80&background=6366f1&color=fff",
       start: "Aug 2023",
       end: "Present",
       highlights: [
@@ -83,8 +81,6 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Front-End Developer",
-      logoUrl:
-        "https://ui-avatars.com/api/?name=Arad+Dasht&size=80&background=8b5cf6&color=fff",
       start: "Sep 2022",
       end: "Aug 2023",
       highlights: [
@@ -100,8 +96,6 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Front-End Developer",
-      logoUrl:
-        "https://ui-avatars.com/api/?name=Kimiagaran&size=80&background=ec4899&color=fff",
       start: "Sep 2020",
       end: "Sep 2022",
       highlights: [
