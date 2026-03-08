@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { FlickeringGridWrapper } from "@/components/flickering-grid-wrapper";
 import { DATA } from "@/data/resume";
 
 export default function ContactSection() {
@@ -9,7 +9,7 @@ export default function ContactSection() {
         <span className="text-background text-sm font-medium">Contact</span>
       </div>
       <div className="absolute inset-0 top-0 left-0 right-0 h-1/2 rounded-xl overflow-hidden">
-        <FlickeringGrid
+        <FlickeringGridWrapper
           className="h-full w-full"
           squareSize={2}
           gridGap={2}

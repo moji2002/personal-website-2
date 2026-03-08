@@ -8,6 +8,7 @@ const nextConfig = {
     inlineCss: true,
     optimizePackageImports: [
       "lucide-react",
+      "react-markdown",
       "@radix-ui/react-accordion",
       "@radix-ui/react-avatar",
       "@radix-ui/react-icons",

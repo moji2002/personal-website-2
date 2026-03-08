@@ -5,13 +5,29 @@ import { DATA } from "@/data/resume";
 import Image from "next/image";
 import Link from "next/link";
 import Markdown from "react-markdown";
-import BlogPreviewSection from "@/components/section/blog-preview-section";
-import ContactSection from "@/components/section/contact-section";
-// import HackathonsSection from "@/components/section/hackathons-section";
-import ProjectsSection from "@/components/section/projects-section";
-import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
+
+const ProjectsSection = dynamic(
+  () =>
+    import("@/components/section/projects-section").then((m) => m.default),
+  { ssr: true },
+);
+const BlogPreviewSection = dynamic(
+  () =>
+    import("@/components/section/blog-preview-section").then((m) => m.default),
+  { ssr: true },
+);
+const ContactSection = dynamic(
+  () =>
+    import("@/components/section/contact-section").then((m) => m.default),
+  { ssr: true },
+);
+const WorkSection = dynamic(
+  () => import("@/components/section/work-section").then((m) => m.default),
+  { ssr: true },
+);
 
 const BLUR_FADE_DELAY = 0.04;
 
